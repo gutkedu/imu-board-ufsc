@@ -33,6 +33,7 @@ void ConfigureSSI0(void)
 {
     SysCtlPeripheralEnable (SYSCTL_PERIPH_SSI0);
     SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOA);
+    SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOE);
 
     GPIOPinConfigure (GPIO_PA2_SSI0CLK);
     GPIOPinConfigure (GPIO_PA4_SSI0RX);
@@ -43,8 +44,7 @@ void ConfigureSSI0(void)
                        SSI_MODE_MASTER, 5000000, 16);
     SSIEnable (SSI0_BASE);
 
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOE); // Reset_scc
-    GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_2);
+    GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_2); // Reset_scc
 
     GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_0); // CS SCC 1 PE_1
     GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0xff);    // Chip select high
