@@ -69,7 +69,20 @@ void Timer0IntHandler(void)
 int main(void)
 {
 
+    // Enable lazy stacking for interrupt handlers.  This allows floating-point
+    // instructions to be used within interrupt handlers, but at the expense of
+    // extra stack usage.
+    FPULazyStackingEnable();
+
     SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ); //80mhz
+
+    ConfigureUART0(void);
+    ConfigureTIMER0(void);
+    ConfigureSSI0(void);
+    ConfigureSSI1(void);
+    ConfigureSSI2(void);
+
+
 
 	return 0;
 }
