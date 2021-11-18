@@ -83,15 +83,17 @@ void set_bno_1_mode(u8 op_mode);
 /// \returns the calibration data
 Calibration calibrate_imu();
 
-
 ///
 
 void send_request_I2C0(uint32_t t_addr, uint32_t t_register, uint32_t t_data);
 uint32_t recieve_request_I2C0(uint32_t t_addr, uint32_t t_register);
 void send_request_I2C1(uint32_t t_addr, uint32_t t_register, uint32_t t_data);
 uint32_t recieve_request_I2C1(uint32_t t_addr, uint32_t t_register);
-
-
+void set_op_mode_bno055_I2C0(uint8_t t_operation_mode, uint8_t bno_x);
+void set_pow_mode_bno055_I2C0(uint8_t t_power_mode, uint8_t bno_x);
+void set_pow_mode_bno055_I2C1(uint8_t t_power_mode, uint8_t bno_x);
+void init_bno055_I2C0(uint8_t bno_x);
+void init_bno055_I2C1(uint8_t bno_x);
 
 
 #endif

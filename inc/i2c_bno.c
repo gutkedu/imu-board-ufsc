@@ -627,3 +627,134 @@ uint32_t recieve_request_I2C1(uint32_t t_addr, uint32_t t_register)
     return I2CMasterDataGet(I2C1_BASE);
 }
 
+void init_bno055_I2C0(uint8_t bno_x)
+{
+    // Select BNO055 config mode
+    set_op_mode_bno055_I2C0(CONFIGMODE, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200); //7ms
+    uint8_t hold = 0x1B;
+    // Configure GYR 230 hz and 250 dps
+    write_bno055_I2C0(PAGE_1, GYR_CONFIG_0, hold, bno_x);
+    write_bno055_I2C0(PAGE_1, GYR_CONFIG_0, 0x00, bno_x);
+
+    // Select BNO055 gyro temperature source
+    write_bno055_I2C0(PAGE_0, TEMP_SOURCE, 0x01, bno_x);
+
+    SysCtlDelay(SysCtlClockGet() / 200);
+    set_op_mode_bno055_I2C0(GYROONLY, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200);
+
+    write_bno055_I2C0(PAGE_0, UNIT_SEL, 0x00, bno_x);
+
+    // Select BNO055 system power mode
+    set_pow_mode_bno055_I2C0(NORMAL_MODE, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 500);
+}
+
+void init_bno055_I2C1(uint8_t bno_x)
+{
+    // Select BNO055 config mode
+    set_op_mode_bno055_I2C1(CONFIGMODE, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200); //7ms
+    uint8_t hold = 0x1B;
+    // Configure GYR 230 hz and 250 dps
+    write_bno055_I2C1(PAGE_1, GYR_CONFIG_0, hold, bno_x);
+    write_bno055_I2C1(PAGE_1, GYR_CONFIG_0, 0x00, bno_x);
+
+    // Select BNO055 gyro temperature source
+
+    write_bno055_I2C1(PAGE_0, TEMP_SOURCE, 0x01, bno_x);
+
+    SysCtlDelay(SysCtlClockGet() / 200);
+    set_op_mode_bno055_I2C1(GYROONLY, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200);
+
+    write_bno055_I2C1(PAGE_0, UNIT_SEL, 0x00, bno_x);
+
+    // Select BNO055 system power mode
+    set_pow_mode_bno055_I2C1(NORMAL_MODE, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 500);
+}
+
+void set_op_mode_bno055_I2C0(uint8_t t_operation_mode, uint8_t bno_x)
+{
+
+    uint8_t prev_operation_mode = m_operation_mode;
+    if (prev_operation_mode == CONFIGMODE)
+    {
+        write_bno055_I2C0(PAGE_0, OPR_MODE, t_operation_mode, bno_x);
+        SysCtlDelay(SysCtlClockGet() / 426);
+    }
+    else
+    {
+        write_bno055_I2C0(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+        SysCtlDelay(SysCtlClockGet() / 159);
+        if (t_operation_mode != CONFIGMODE)
+        {
+            write_bno055_I2C0(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+            SysCtlDelay(SysCtlClockGet() / 426);
+        }
+    }
+    m_operation_mode = t_operation_mode;
+}
+
+void set_op_mode_bno055_I2C1(uint8_t t_operation_mode, uint8_t bno_x)
+{
+
+    uint8_t prev_operation_mode = m_operation_mode;
+    if (prev_operation_mode == CONFIGMODE)
+    {
+        write_bno055_I2C1(PAGE_0, OPR_MODE, t_operation_mode, bno_x);
+        SysCtlDelay(SysCtlClockGet() / 426);
+    }
+    else
+    {
+        write_bno055_I2C1(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+        SysCtlDelay(SysCtlClockGet() / 159);
+        if (t_operation_mode != CONFIGMODE)
+        {
+            write_bno055_I2C1(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+            SysCtlDelay(SysCtlClockGet() / 426);
+        }
+    }
+    m_operation_mode = t_operation_mode;
+}
+
+void set_pow_mode_bno055_I2C0(uint8_t t_power_mode, uint8_t bno_x)
+{
+
+    uint8_t prev_operation_mode = m_operation_mode;
+    if (prev_operation_mode != CONFIGMODE)
+    {
+        set_op_mode_bno055_I2C0(CONFIGMODE);
+    }
+    m_power_mode = t_power_mode;
+
+    write_bno055_I2C0(PAGE_0, PWR_MODE, t_power_mode, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 426);
+
+    if (prev_operation_mode != CONFIGMODE)
+    {
+        set_op_mode_bno055_I2C0(prev_operation_mode);
+    }
+}
+
+void set_pow_mode_bno055_I2C1(uint8_t t_power_mode, uint8_t bno_x)
+{
+
+    uint8_t prev_operation_mode = m_operation_mode;
+    if (prev_operation_mode != CONFIGMODE)
+    {
+        set_op_mode_bno055_I2C1(CONFIGMODE);
+    }
+    m_power_mode = t_power_mode;
+
+    write_bno055_I2C1(PAGE_0, PWR_MODE, t_power_mode, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 426);
+
+    if (prev_operation_mode != CONFIGMODE)
+    {
+        set_op_mode_bno055_I2C1(prev_operation_mode);
+    }
+}
+

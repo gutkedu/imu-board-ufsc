@@ -21,6 +21,13 @@
 #include "inc/spi_scc2130.h"
 #include "inc/i2c_bno.h"
 
+void Timer0IntHandler()
+{
+    // call sensor readings...
+    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT); // clear the timer interrupt
+
+}
+
 void init_led(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
@@ -74,7 +81,9 @@ int main(void)
     // extra stack usage.
     FPULazyStackingEnable();
 
-    SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ); //80mhz
+    SysCtlClockSet(
+            SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN
+                    | SYSCTL_XTAL_16MHZ); //80mhz
 
     ConfigureUART0(void);
     ConfigureTIMER0(void);
@@ -82,7 +91,9 @@ int main(void)
     ConfigureSSI1(void);
     ConfigureSSI2(void);
 
+    //init_scc2130();
 
+    //TimerEnable(TIMER0_BASE, TIMER_A); //enable timer0
 
-	return 0;
+    return 0;
 }
