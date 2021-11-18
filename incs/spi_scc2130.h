@@ -1,7 +1,3 @@
-/// \file i2c_bno.h
-/// \brief Functions to interact with the IMU. These functions initialize and allow
-/// for easy interaction with the BNO055 IMU.
-
 #ifndef SPI_SCC_HG
 #define SPI_SCC_HG
 
@@ -51,14 +47,14 @@ uint32_t send_request_SCC5(uint32_t request);
 uint32_t send_request_SCC6(uint32_t request);
 
 Output_scc read_and_process_gyro_SCC1(void);
-void read_and_process_gyro_SCC2(void);
-void read_and_process_gyro_SCC3(void);
-void read_and_process_gyro_SCC4(void);
-void read_and_process_gyro_SCC5(void);
-void read_and_process_gyro_SCC6(void);
+Output_scc read_and_process_gyro_SCC2(void);
+Output_scc read_and_process_gyro_SCC3(void);
+Output_scc read_and_process_gyro_SCC4(void);
+Output_scc read_and_process_gyro_SCC5(void);
+Output_scc read_and_process_gyro_SCC6(void);
 
 void init_scc2130(void);
 
-void delayMs(uint32_t ui32Ms)
+void delayMs(uint32_t ui32Ms);
 
 #endif

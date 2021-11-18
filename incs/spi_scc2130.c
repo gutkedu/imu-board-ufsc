@@ -11,7 +11,7 @@
 #include "driverlib/uart.h"
 #include "utils/uartstdio.h"
 
-#include "inc/spi_scc2130.h"
+#include "spi_scc2130.h"
 
 //Global variables
 

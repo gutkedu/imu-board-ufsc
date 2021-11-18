@@ -18,8 +18,9 @@
 #include "driverlib/ssi.h"
 
 #include "utils/uartstdio.h"
-#include "inc/spi_scc2130.h"
-#include "inc/i2c_bno.h"
+
+#include "incs/i2c_bno.h"
+#include "incs/spi_scc2130.h"
 
 void Timer0IntHandler()
 {
@@ -97,3 +98,4 @@ int main(void)
 
     return 0;
 }
+

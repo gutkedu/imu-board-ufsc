@@ -5,6 +5,7 @@
 #ifndef INIT_IMU_HG
 #define INIT_IMU_HG
 
+//#include "../incs/bno055.h"
 #include "bno055.h"
 
 typedef struct Calibration
@@ -94,6 +95,6 @@ void set_pow_mode_bno055_I2C0(uint8_t t_power_mode, uint8_t bno_x);
 void set_pow_mode_bno055_I2C1(uint8_t t_power_mode, uint8_t bno_x);
 void init_bno055_I2C0(uint8_t bno_x);
 void init_bno055_I2C1(uint8_t bno_x);
-
+//TODO: bno055 sensor readings functions...
 
 #endif

@@ -1,7 +1,8 @@
+#include <stdint.h>
 #include <stdarg.h>
 #include <stdbool.h>
-#include <stdint.h>
 
+#include "inc/tm4c123gh6pm.h"
 #include "inc/hw_gpio.h"
 #include "inc/hw_i2c.h"
 #include "inc/hw_memmap.h"
@@ -22,12 +23,16 @@
 #include "driverlib/uart.h"
 #include "driverlib/qei.h"
 
-#include "inc/i2c_bno.h"
+//#include "incs/i2c_bno.h"
+#include "i2c_bno.h"
 
 static s8 error1;
 static s8 error2;
 static s8 error3;
 static s8 error4;
+uint8_t m_page = 0;
+uint8_t m_operation_mode = BNO055_OPERATION_MODE_CONFIG;
+uint8_t m_power_mode = BNO055_POWER_MODE_NORMAL;
 
 void ConfigureI2C0()
 {
@@ -80,8 +85,8 @@ void ConfigureI2C1()
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
 
     // Configure the pin muxing for I2C0 functions
-    GPIOPinConfigure(GPIO_PB2_I2C1SCL);
-    GPIOPinConfigure(GPIO_PB3_I2C1SDA);
+    GPIOPinConfigure(GPIO_PA6_I2C1SCL);
+    GPIOPinConfigure(GPIO_PA7_I2C1SDA);
 
     // Select the I2C function for these pins.
     GPIOPinTypeI2CSCL(GPIO_PORTA_BASE, GPIO_PIN_6);
@@ -197,7 +202,7 @@ s8 _imu_i2c_read_i2c0(u8 dev_address, u8 reg_address, u8 *arr_data, u8 count)
             {
                 // Read the last byte
                 I2CMasterControl(I2C0_BASE,
-                                 I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
+                I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
             }
             else
             {
@@ -219,7 +224,7 @@ s8 _imu_i2c_read_i2c0(u8 dev_address, u8 reg_address, u8 *arr_data, u8 count)
             {
                 comres = -1; // error occured, end comms and exit
                 I2CMasterControl(I2C0_BASE,
-                                 I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
+                I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
                 while (I2CMasterBusy(I2C0_BASE))
                     ;
                 i = count;
@@ -378,7 +383,7 @@ s8 _imu_i2c_read_i2c1(u8 dev_address, u8 reg_address, u8 *arr_data, u8 count)
             {
                 // Read the last byte
                 I2CMasterControl(I2C1_BASE,
-                                 I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
+                I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
             }
             else
             {
@@ -400,7 +405,7 @@ s8 _imu_i2c_read_i2c1(u8 dev_address, u8 reg_address, u8 *arr_data, u8 count)
             {
                 comres = -1; // error occured, end comms and exit
                 I2CMasterControl(I2C1_BASE,
-                                 I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
+                I2C_MASTER_CMD_BURST_RECEIVE_FINISH);
                 while (I2CMasterBusy(I2C1_BASE))
                     ;
                 i = count;
@@ -627,71 +632,80 @@ uint32_t recieve_request_I2C1(uint32_t t_addr, uint32_t t_register)
     return I2CMasterDataGet(I2C1_BASE);
 }
 
-void init_bno055_I2C0(uint8_t bno_x)
+void write_bno055_I2C0(uint8_t t_page, uint8_t t_register, uint8_t t_data,
+                       uint8_t addr)
 {
-    // Select BNO055 config mode
-    set_op_mode_bno055_I2C0(CONFIGMODE, bno_x);
-    SysCtlDelay(SysCtlClockGet() / 200); //7ms
-    uint8_t hold = 0x1B;
-    // Configure GYR 230 hz and 250 dps
-    write_bno055_I2C0(PAGE_1, GYR_CONFIG_0, hold, bno_x);
-    write_bno055_I2C0(PAGE_1, GYR_CONFIG_0, 0x00, bno_x);
+    if (m_page != t_page)
+    {
+        send_request_I2C0(addr, BNO055_PAGE_ID_ADDR, t_page);
+        m_page = t_page;
+    }
 
-    // Select BNO055 gyro temperature source
-    write_bno055_I2C0(PAGE_0, TEMP_SOURCE, 0x01, bno_x);
-
-    SysCtlDelay(SysCtlClockGet() / 200);
-    set_op_mode_bno055_I2C0(GYROONLY, bno_x);
-    SysCtlDelay(SysCtlClockGet() / 200);
-
-    write_bno055_I2C0(PAGE_0, UNIT_SEL, 0x00, bno_x);
-
-    // Select BNO055 system power mode
-    set_pow_mode_bno055_I2C0(NORMAL_MODE, bno_x);
-    SysCtlDelay(SysCtlClockGet() / 500);
+    send_request_I2C0(addr, t_register, t_data);
 }
 
-void init_bno055_I2C1(uint8_t bno_x)
+uint8_t read_bno055_I2C0(uint8_t t_page, uint8_t t_register, uint8_t addr)
 {
-    // Select BNO055 config mode
-    set_op_mode_bno055_I2C1(CONFIGMODE, bno_x);
-    SysCtlDelay(SysCtlClockGet() / 200); //7ms
-    uint8_t hold = 0x1B;
-    // Configure GYR 230 hz and 250 dps
-    write_bno055_I2C1(PAGE_1, GYR_CONFIG_0, hold, bno_x);
-    write_bno055_I2C1(PAGE_1, GYR_CONFIG_0, 0x00, bno_x);
+    uint32_t ret_val;
 
-    // Select BNO055 gyro temperature source
+    if (m_page != t_page)
+    {
+        send_request_I2C0(addr, BNO055_PAGE_ID_ADDR, t_page);
+        m_page = t_page;
+    }
 
-    write_bno055_I2C1(PAGE_0, TEMP_SOURCE, 0x01, bno_x);
-
-    SysCtlDelay(SysCtlClockGet() / 200);
-    set_op_mode_bno055_I2C1(GYROONLY, bno_x);
-    SysCtlDelay(SysCtlClockGet() / 200);
-
-    write_bno055_I2C1(PAGE_0, UNIT_SEL, 0x00, bno_x);
-
-    // Select BNO055 system power mode
-    set_pow_mode_bno055_I2C1(NORMAL_MODE, bno_x);
-    SysCtlDelay(SysCtlClockGet() / 500);
+    ret_val = recieve_request_I2C0(addr, t_register);
+    //UARTprintf("ret_val: %d\n", ret_val);
+    return ret_val;
 }
+
+void write_bno055_I2C1(uint8_t t_page, uint8_t t_register, uint8_t t_data,
+                       uint8_t addr)
+{
+    if (m_page != t_page)
+    {
+        send_request_I2C1(addr, BNO055_PAGE_ID_ADDR, t_page);
+        m_page = t_page;
+    }
+
+    send_request_I2C1(addr, t_register, t_data);
+}
+
+uint8_t read_bno055_I2C1(uint8_t t_page, uint8_t t_register, uint8_t addr)
+{
+    uint32_t ret_val;
+
+    if (m_page != t_page)
+    {
+        send_request_I2C1(addr, BNO055_PAGE_ID_ADDR, t_page);
+        m_page = t_page;
+    }
+
+    ret_val = recieve_request_I2C1(addr, t_register);
+    //UARTprintf("ret_val: %d\n", ret_val);
+    return ret_val;
+}
+
 
 void set_op_mode_bno055_I2C0(uint8_t t_operation_mode, uint8_t bno_x)
 {
 
     uint8_t prev_operation_mode = m_operation_mode;
-    if (prev_operation_mode == CONFIGMODE)
+    if (prev_operation_mode == BNO055_OPERATION_MODE_CONFIG)
     {
-        write_bno055_I2C0(PAGE_0, OPR_MODE, t_operation_mode, bno_x);
+        write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+                          t_operation_mode, bno_x);
         SysCtlDelay(SysCtlClockGet() / 426);
     }
     else
     {
-        write_bno055_I2C0(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+        write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+                          BNO055_OPERATION_MODE_CONFIG, bno_x);
         SysCtlDelay(SysCtlClockGet() / 159);
-        if (t_operation_mode != CONFIGMODE)
+        if (t_operation_mode != BNO055_OPERATION_MODE_CONFIG)
         {
-            write_bno055_I2C0(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+            write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+                              BNO055_OPERATION_MODE_CONFIG, bno_x);
             SysCtlDelay(SysCtlClockGet() / 426);
         }
     }
@@ -702,18 +716,21 @@ void set_op_mode_bno055_I2C1(uint8_t t_operation_mode, uint8_t bno_x)
 {
 
     uint8_t prev_operation_mode = m_operation_mode;
-    if (prev_operation_mode == CONFIGMODE)
+    if (prev_operation_mode == BNO055_OPERATION_MODE_CONFIG)
     {
-        write_bno055_I2C1(PAGE_0, OPR_MODE, t_operation_mode, bno_x);
+        write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+                          t_operation_mode, bno_x);
         SysCtlDelay(SysCtlClockGet() / 426);
     }
     else
     {
-        write_bno055_I2C1(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+        write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+                          BNO055_OPERATION_MODE_CONFIG, bno_x);
         SysCtlDelay(SysCtlClockGet() / 159);
-        if (t_operation_mode != CONFIGMODE)
+        if (t_operation_mode != BNO055_OPERATION_MODE_CONFIG)
         {
-            write_bno055_I2C1(PAGE_0, OPR_MODE, CONFIGMODE, bno_x);
+            write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+                              BNO055_OPERATION_MODE_CONFIG, bno_x);
             SysCtlDelay(SysCtlClockGet() / 426);
         }
     }
@@ -724,18 +741,19 @@ void set_pow_mode_bno055_I2C0(uint8_t t_power_mode, uint8_t bno_x)
 {
 
     uint8_t prev_operation_mode = m_operation_mode;
-    if (prev_operation_mode != CONFIGMODE)
+    if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
     {
-        set_op_mode_bno055_I2C0(CONFIGMODE);
+        set_op_mode_bno055_I2C0(BNO055_OPERATION_MODE_CONFIG, bno_x);
     }
     m_power_mode = t_power_mode;
 
-    write_bno055_I2C0(PAGE_0, PWR_MODE, t_power_mode, bno_x);
+    write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_PWR_MODE_ADDR, t_power_mode,
+                      bno_x);
     SysCtlDelay(SysCtlClockGet() / 426);
 
-    if (prev_operation_mode != CONFIGMODE)
+    if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
     {
-        set_op_mode_bno055_I2C0(prev_operation_mode);
+        set_op_mode_bno055_I2C0(prev_operation_mode, bno_x);
     }
 }
 
@@ -743,18 +761,69 @@ void set_pow_mode_bno055_I2C1(uint8_t t_power_mode, uint8_t bno_x)
 {
 
     uint8_t prev_operation_mode = m_operation_mode;
-    if (prev_operation_mode != CONFIGMODE)
+    if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
     {
-        set_op_mode_bno055_I2C1(CONFIGMODE);
+        set_op_mode_bno055_I2C1(BNO055_OPERATION_MODE_CONFIG, bno_x);
     }
     m_power_mode = t_power_mode;
 
-    write_bno055_I2C1(PAGE_0, PWR_MODE, t_power_mode, bno_x);
+    write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_PWR_MODE_ADDR, t_power_mode, bno_x);
     SysCtlDelay(SysCtlClockGet() / 426);
 
-    if (prev_operation_mode != CONFIGMODE)
+    if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
     {
-        set_op_mode_bno055_I2C1(prev_operation_mode);
+        set_op_mode_bno055_I2C1(prev_operation_mode, bno_x);
     }
+}
+
+void init_bno055_I2C0(uint8_t bno_x)
+{
+    // Select BNO055 config mode
+    set_op_mode_bno055_I2C0(BNO055_OPERATION_MODE_CONFIG, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200); //7ms
+    uint8_t hold = 0x1B;
+    // Configure GYR 230 hz and 250 dps
+    write_bno055_I2C0(BNO055_PAGE_ONE, BNO055_GYRO_CONFIG_ADDR, hold, bno_x);
+    write_bno055_I2C0(BNO055_PAGE_ONE, BNO055_GYRO_MODE_CONFIG_ADDR, 0x00,
+                      bno_x);
+
+    // Select BNO055 gyro temperature source
+    write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_TEMP_SOURCE_ADDR, 0x01, bno_x);
+
+    SysCtlDelay(SysCtlClockGet() / 200);
+    set_op_mode_bno055_I2C0(BNO055_OPERATION_MODE_GYRONLY, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200);
+
+    write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_UNIT_SEL_ADDR, 0x00, bno_x);
+
+    // Select BNO055 system power mode
+    set_pow_mode_bno055_I2C0(BNO055_POWER_MODE_NORMAL, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 500);
+}
+
+void init_bno055_I2C1(uint8_t bno_x)
+{
+    // Select BNO055 config mode
+    set_op_mode_bno055_I2C1(BNO055_OPERATION_MODE_CONFIG, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200); //7ms
+    uint8_t hold = 0x1B;
+    // Configure GYR 230 hz and 250 dps
+    write_bno055_I2C1(BNO055_PAGE_ONE, BNO055_GYRO_CONFIG_ADDR, hold, bno_x);
+    write_bno055_I2C1(BNO055_PAGE_ONE, BNO055_GYRO_MODE_CONFIG_ADDR, 0x00,
+                      bno_x);
+
+    // Select BNO055 gyro temperature source
+
+    write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_TEMP_SOURCE_ADDR, 0x01, bno_x);
+
+    SysCtlDelay(SysCtlClockGet() / 200);
+    set_op_mode_bno055_I2C1(BNO055_OPERATION_MODE_GYRONLY, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 200);
+
+    write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_UNIT_SEL_ADDR, 0x00, bno_x);
+
+    // Select BNO055 system power mode
+    set_pow_mode_bno055_I2C1(BNO055_POWER_MODE_NORMAL, bno_x);
+    SysCtlDelay(SysCtlClockGet() / 500);
 }
 
