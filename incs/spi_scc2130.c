@@ -31,18 +31,19 @@ void delayMs(uint32_t ui32Ms)
 
 void ConfigureSSI0(void)
 {
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_SSI0);
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOA);
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOE);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI0);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOA);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOE);
 
-    GPIOPinConfigure (GPIO_PA2_SSI0CLK);
-    GPIOPinConfigure (GPIO_PA4_SSI0RX);
-    GPIOPinConfigure (GPIO_PA5_SSI0TX);
+    GPIOPinConfigure(GPIO_PA2_SSI0CLK);
+    GPIOPinConfigure(GPIO_PA4_SSI0RX);
+    GPIOPinConfigure(GPIO_PA5_SSI0TX);
     GPIOPinTypeSSI(GPIO_PORTA_BASE, GPIO_PIN_5 | GPIO_PIN_2 | GPIO_PIN_4);
 
     SSIConfigSetExpClk(SSI0_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
-                       SSI_MODE_MASTER, 5000000, 16);
-    SSIEnable (SSI0_BASE);
+    SSI_MODE_MASTER,
+                       5000000, 16);
+    SSIEnable(SSI0_BASE);
 
     GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_2); // Reset_scc
 
@@ -55,17 +56,18 @@ void ConfigureSSI0(void)
 
 void ConfigureSSI1(void)
 {
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_SSI1);
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOF);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 
-    GPIOPinConfigure (GPIO_PF2_SSI1CLK);
-    GPIOPinConfigure (GPIO_PF0_SSI1RX);
-    GPIOPinConfigure (GPIO_PF1_SSI1TX);
+    GPIOPinConfigure(GPIO_PF2_SSI1CLK);
+    GPIOPinConfigure(GPIO_PF0_SSI1RX);
+    GPIOPinConfigure(GPIO_PF1_SSI1TX);
     GPIOPinTypeSSI(GPIO_PORTF_BASE, GPIO_PIN_2 | GPIO_PIN_0 | GPIO_PIN_1);
 
     SSIConfigSetExpClk(SSI1_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
-                       SSI_MODE_MASTER, 5000000, 16);
-    SSIEnable (SSI1_BASE);
+    SSI_MODE_MASTER,
+                       5000000, 16);
+    SSIEnable(SSI1_BASE);
 
     GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_3); // CS SCC 3 PE_3
     GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_3, 0xff);    // Chip select high
@@ -76,17 +78,18 @@ void ConfigureSSI1(void)
 
 void ConfigureSSI2(void)
 {
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_SSI2);
-    SysCtlPeripheralEnable (SYSCTL_PERIPH_GPIOB);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI2);
+    SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOB);
 
-    GPIOPinConfigure (GPIO_PB4_SSI2CLK);
-    GPIOPinConfigure (GPIO_PB6_SSI2RX);
-    GPIOPinConfigure (GPIO_PB7_SSI2TX);
+    GPIOPinConfigure(GPIO_PB4_SSI2CLK);
+    GPIOPinConfigure(GPIO_PB6_SSI2RX);
+    GPIOPinConfigure(GPIO_PB7_SSI2TX);
     GPIOPinTypeSSI(GPIO_PORTB_BASE, GPIO_PIN_4 | GPIO_PIN_6 | GPIO_PIN_7);
 
     SSIConfigSetExpClk(SSI2_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
-                       SSI_MODE_MASTER, 5000000, 16);
-    SSIEnable (SSI2_BASE);
+    SSI_MODE_MASTER,
+                       5000000, 16);
+    SSIEnable(SSI2_BASE);
 
     GPIOPinTypeGPIOOutput(GPIO_PORTE_BASE, GPIO_PIN_5); // CS SCC 5 PE_5
     GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_5, 0xff);    // Chip select high
@@ -106,7 +109,7 @@ uint32_t send_request_SCC1(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI0_BASE, request >> 16);
-    while (SSIBusy (SSI0_BASE))
+    while (SSIBusy(SSI0_BASE))
         ; // wait until the busy bit is cleared
 
     SSIDataGet(SSI0_BASE, &temp); // Read response high word
@@ -114,7 +117,7 @@ uint32_t send_request_SCC1(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI0_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy (SSI0_BASE))
+    while (SSIBusy(SSI0_BASE))
         ;
 
     SSIDataGet(SSI0_BASE, &temp); // Read response low word
@@ -136,7 +139,7 @@ uint32_t send_request_SCC2(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI0_BASE, request >> 16);
-    while (SSIBusy (SSI0_BASE))
+    while (SSIBusy(SSI0_BASE))
         ;
     // wait until the busy bit is cleared
     SSIDataGet(SSI0_BASE, &temp); // Read response high word
@@ -144,7 +147,7 @@ uint32_t send_request_SCC2(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI0_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy (SSI0_BASE))
+    while (SSIBusy(SSI0_BASE))
         ;
 
     SSIDataGet(SSI0_BASE, &temp); // Read response low word
@@ -166,7 +169,7 @@ uint32_t send_request_SCC3(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI1_BASE, request >> 16);
-    while (SSIBusy (SSI1_BASE))
+    while (SSIBusy(SSI1_BASE))
         ;
     // wait until the busy bit is cleared
     SSIDataGet(SSI1_BASE, &temp); // Read response high word
@@ -174,7 +177,7 @@ uint32_t send_request_SCC3(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI1_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy (SSI1_BASE))
+    while (SSIBusy(SSI1_BASE))
         ;
 
     SSIDataGet(SSI1_BASE, &temp); // Read response low word
@@ -196,7 +199,7 @@ uint32_t send_request_SCC4(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI1_BASE, request >> 16);
-    while (SSIBusy (SSI1_BASE))
+    while (SSIBusy(SSI1_BASE))
         ;
     // wait until the busy bit is cleared
     SSIDataGet(SSI1_BASE, &temp); // Read response high word
@@ -204,7 +207,7 @@ uint32_t send_request_SCC4(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI1_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy (SSI1_BASE))
+    while (SSIBusy(SSI1_BASE))
         ;
 
     SSIDataGet(SSI1_BASE, &temp); // Read response low word
@@ -226,7 +229,7 @@ uint32_t send_request_SCC5(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI2_BASE, request >> 16);
-    while (SSIBusy (SSI2_BASE))
+    while (SSIBusy(SSI2_BASE))
         ;
     // wait until the busy bit is cleared
     SSIDataGet(SSI2_BASE, &temp); // Read response high word
@@ -234,7 +237,7 @@ uint32_t send_request_SCC5(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI2_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy (SSI2_BASE))
+    while (SSIBusy(SSI2_BASE))
         ;
 
     SSIDataGet(SSI2_BASE, &temp); // Read response low word
@@ -256,7 +259,7 @@ uint32_t send_request_SCC6(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI2_BASE, request >> 16);
-    while (SSIBusy (SSI2_BASE))
+    while (SSIBusy(SSI2_BASE))
         ;
     // wait until the busy bit is cleared
     SSIDataGet(SSI2_BASE, &temp); // Read response high word
@@ -264,7 +267,7 @@ uint32_t send_request_SCC6(uint32_t request)
     temp = 0x00;
 
     SSIDataPut(SSI2_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy (SSI2_BASE))
+    while (SSIBusy(SSI2_BASE))
         ;
 
     SSIDataGet(SSI2_BASE, &temp); // Read response low word
@@ -284,8 +287,7 @@ Output_scc read_and_process_gyro_SCC1(void)
     uint32_t result_rate;
     uint32_t result_temp;
     uint8_t RSdata;
-    short int signed_rate;
-    short int signed_temp;
+    Output_scc output;
 
     response_temp = send_request_SCC1(REQ_READ_RATE);
     response_rate = send_request_SCC1(REQ_READ_TEMP);
@@ -303,13 +305,9 @@ Output_scc read_and_process_gyro_SCC1(void)
         data_error = true;
 
     result_rate = rate;
-    signed_rate = (short int) result_rate;
+    output.gyro = (short int) result_rate;
     result_temp = temp;
-    signed_temp = (short int) result_temp;
-
-    Output_scc output;
-    output.gyro = signed_rate;
-    output.temp = signed_temp;
+    output.temp = (short int) result_temp;
 
     return output;
 
@@ -324,8 +322,7 @@ Output_scc read_and_process_gyro_SCC2(void)
     uint32_t result_rate;
     uint32_t result_temp;
     uint8_t RSdata;
-    short int signed_rate;
-    short int signed_temp;
+    Output_scc output;
 
     response_temp = send_request_SCC2(REQ_READ_RATE);
     response_rate = send_request_SCC2(REQ_READ_TEMP);
@@ -343,13 +340,9 @@ Output_scc read_and_process_gyro_SCC2(void)
         data_error = true;
 
     result_rate = rate;
-    signed_rate = (short int) result_rate;
+    output.gyro = (short int) result_rate;
     result_temp = temp;
-    signed_temp = (short int) result_temp;
-
-    Output_scc output;
-    output.gyro = signed_rate;
-    output.temp = signed_temp;
+    output.temp = (short int) result_temp;
 
     return output;
 }
@@ -363,8 +356,7 @@ Output_scc read_and_process_gyro_SCC3(void)
     uint32_t result_rate;
     uint32_t result_temp;
     uint8_t RSdata;
-    short int signed_rate;
-    short int signed_temp;
+    Output_scc output;
 
     response_temp = send_request_SCC3(REQ_READ_RATE);
     response_rate = send_request_SCC3(REQ_READ_TEMP);
@@ -381,13 +373,9 @@ Output_scc read_and_process_gyro_SCC3(void)
     if (RSdata != 1)
         data_error = true;
     result_rate = rate;
-    signed_rate = (short int) result_rate;
+    output.gyro = (short int) result_rate;
     result_temp = temp;
-    signed_temp = (short int) result_temp;
-
-    Output_scc output;
-    output.gyro = signed_rate;
-    output.temp = signed_temp;
+    output.temp = (short int) result_temp;
 
     return output;
 }
@@ -401,8 +389,7 @@ Output_scc read_and_process_gyro_SCC4(void)
     uint32_t result_rate;
     uint32_t result_temp;
     uint8_t RSdata;
-    short int signed_rate;
-    short int signed_temp;
+    Output_scc output;
 
     response_temp = send_request_SCC4(REQ_READ_RATE);
     response_rate = send_request_SCC4(REQ_READ_TEMP);
@@ -420,13 +407,9 @@ Output_scc read_and_process_gyro_SCC4(void)
         data_error = true;
 
     result_rate = rate;
-    signed_rate = (short int) result_rate;
+    output.gyro = (short int) result_rate;
     result_temp = temp;
-    signed_temp = (short int) result_temp;
-
-    Output_scc output;
-    output.gyro = signed_rate;
-    output.temp = signed_temp;
+    output.temp = (short int) result_temp;
 
     return output;
 }
@@ -440,8 +423,7 @@ Output_scc read_and_process_gyro_SCC5(void)
     uint32_t result_rate;
     uint32_t result_temp;
     uint8_t RSdata;
-    short int signed_rate;
-    short int signed_temp;
+    Output_scc output;
 
     response_temp = send_request_SCC5(REQ_READ_RATE);
     response_rate = send_request_SCC5(REQ_READ_TEMP);
@@ -459,13 +441,9 @@ Output_scc read_and_process_gyro_SCC5(void)
         data_error = true;
 
     result_rate = rate;
-    signed_rate = (short int) result_rate;
+    output.gyro = (short int) result_rate;
     result_temp = temp;
-    signed_temp = (short int) result_temp;
-
-    Output_scc output;
-    output.gyro = signed_rate;
-    output.temp = signed_temp;
+    output.temp = (short int) result_temp;
 
     return output;
 }
@@ -479,8 +457,7 @@ Output_scc read_and_process_gyro_SCC6(void)
     uint32_t result_rate;
     uint32_t result_temp;
     uint8_t RSdata;
-    short int signed_rate;
-    short int signed_temp;
+    Output_scc output;
 
     response_temp = send_request_SCC6(REQ_READ_RATE);
     response_rate = send_request_SCC6(REQ_READ_TEMP);
@@ -498,13 +475,9 @@ Output_scc read_and_process_gyro_SCC6(void)
         data_error = true;
 
     result_rate = rate;
-    signed_rate = (short int) result_rate;
+    output.gyro = (short int) result_rate;
     result_temp = temp;
-    signed_temp = (short int) result_temp;
-
-    Output_scc output;
-    output.gyro = signed_rate;
-    output.temp = signed_temp;
+    output.temp = (short int) result_temp;
 
     return output;
 }
