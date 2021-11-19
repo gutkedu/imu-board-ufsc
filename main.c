@@ -7,6 +7,7 @@
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "inc/hw_ssi.h"
+#include "inc/hw_ints.h"
 
 #include "driverlib/debug.h"
 #include "driverlib/fpu.h"
@@ -16,18 +17,13 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/uart.h"
 #include "driverlib/ssi.h"
+#include "driverlib/timer.h"
+#include "driverlib/interrupt.h"
 
 #include "utils/uartstdio.h"
-
-#include "incs/i2c_bno.h"
 #include "incs/spi_scc2130.h"
+#include "incs/i2c_bno.h"
 
-void Timer0IntHandler()
-{
-    // call sensor readings...
-    TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT); // clear the timer interrupt
-
-}
 
 void init_led(void)
 {
@@ -86,11 +82,12 @@ int main(void)
             SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN
                     | SYSCTL_XTAL_16MHZ); //80mhz
 
-    ConfigureUART0(void);
-    ConfigureTIMER0(void);
-    ConfigureSSI0(void);
-    ConfigureSSI1(void);
-    ConfigureSSI2(void);
+    init_led();
+    ConfigureUART0();
+    ConfigureTIMER0();
+    ConfigureSSI0();
+    ConfigureSSI1();
+    ConfigureSSI2();
 
     //init_scc2130();
 
