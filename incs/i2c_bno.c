@@ -818,7 +818,6 @@ void init_bno055_I2C1(uint8_t bno_addr)
                       bno_addr);
 
     // Select BNO055 gyro temperature source
-
     write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_TEMP_SOURCE_ADDR, 0x01,
                       bno_addr);
 

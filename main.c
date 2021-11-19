@@ -62,12 +62,10 @@ void ConfigureTIMER0(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
     TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
-
     //enable Timer to read sensor data at 2.3khz, TODO: revise the calculations.
     uint32_t ui32Period = (SysCtlClockGet() / 2300);
     TimerLoadSet(TIMER0_BASE, TIMER_A, ui32Period - 1);
     //enable timer0 int
-
     IntMasterEnable(); // enable processor interrupts
     TimerIntEnable(TIMER0_BASE, TIMER_TIMA_TIMEOUT);
     IntEnable(INT_TIMER0A);
