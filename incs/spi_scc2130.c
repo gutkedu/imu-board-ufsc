@@ -493,6 +493,11 @@ void init_scc2130(void)
     //sensor 1 power up...
     delayMs(25);               // 25ms
     send_request_SCC1(REQ_WRITE_FLT_60); // set output filter to 60 hz
+    send_request_SCC2(REQ_WRITE_FLT_60); // set output filter to 60 hz
+    send_request_SCC3(REQ_WRITE_FLT_60); // set output filter to 60 hz
+    send_request_SCC4(REQ_WRITE_FLT_60); // set output filter to 60 hz
+    send_request_SCC5(REQ_WRITE_FLT_60); // set output filter to 60 hz
+    send_request_SCC6(REQ_WRITE_FLT_60); // set output filter to 60 hz
     delayMs(595);               // 595 ms;
 
     //Clear status registers for sensor 1.
@@ -502,22 +507,12 @@ void init_scc2130(void)
     send_request_SCC1(REQ_READ_COM_STAT1);
     send_request_SCC1(REQ_READ_STAT_SUM);
 
-    //sensor 2 power up...
-    delayMs(25);               // 25ms
-    send_request_SCC2(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    delayMs(595);               // 595 ms;
-
     //Clear status registers for sensor 2.
     send_request_SCC2(REQ_READ_RATE_STAT1);
     send_request_SCC2(REQ_READ_RATE_STAT2);
     send_request_SCC2(REQ_READ_ACC_STAT);
     send_request_SCC2(REQ_READ_COM_STAT1);
     send_request_SCC2(REQ_READ_STAT_SUM);
-
-    //sensor 3 power up...
-    delayMs(25);               // 25ms
-    send_request_SCC3(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    delayMs(595);               // 595 ms;
 
     //Clear status registers for sensor 3.
     send_request_SCC3(REQ_READ_RATE_STAT1);
@@ -526,11 +521,6 @@ void init_scc2130(void)
     send_request_SCC3(REQ_READ_COM_STAT1);
     send_request_SCC3(REQ_READ_STAT_SUM);
 
-    //sensor 4 power up...
-    delayMs(25);               // 25ms
-    send_request_SCC4(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    delayMs(595);               // 595 ms;
-
     //Clear status registers for sensor 4.
     send_request_SCC4(REQ_READ_RATE_STAT1);
     send_request_SCC4(REQ_READ_RATE_STAT2);
@@ -538,22 +528,12 @@ void init_scc2130(void)
     send_request_SCC4(REQ_READ_COM_STAT1);
     send_request_SCC4(REQ_READ_STAT_SUM);
 
-    //sensor 5 power up...
-    delayMs(25);               // 25ms
-    send_request_SCC5(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    delayMs(595);               // 595 ms;
-
     //Clear status registers for sensor 5.
     send_request_SCC5(REQ_READ_RATE_STAT1);
     send_request_SCC5(REQ_READ_RATE_STAT2);
     send_request_SCC5(REQ_READ_ACC_STAT);
     send_request_SCC5(REQ_READ_COM_STAT1);
     send_request_SCC5(REQ_READ_STAT_SUM);
-
-    //sensor 6 power up...
-    delayMs(25);               // 25ms
-    send_request_SCC6(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    delayMs(595);               // 595 ms;
 
     //Clear status registers for sensor 6.
     send_request_SCC6(REQ_READ_RATE_STAT1);

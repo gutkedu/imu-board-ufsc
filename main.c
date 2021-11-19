@@ -117,15 +117,16 @@ void Timer0IntHandler(void)
 int main(void)
 {
 
+    SysCtlClockSet(
+    SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ); //80mhz
+
     // Enable lazy stacking for interrupt handlers.  This allows floating-point
     // instructions to be used within interrupt handlers, but at the expense of
     // extra stack usage.
     FPULazyStackingEnable();
 
-    SysCtlClockSet(
-    SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ); //80mhz
-
     init_led();
+    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x08); //led on
     ConfigureUART0();
     ConfigureTIMER0();
     ConfigureSSI0();
@@ -136,6 +137,7 @@ int main(void)
     init_bno055_I2C0(BNO055_I2C_ADDR2);
     init_bno055_I2C1(BNO055_I2C_ADDR1);
     init_bno055_I2C1(BNO055_I2C_ADDR2);
+    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00); //led off
 
     TimerEnable(TIMER0_BASE, TIMER_A); //enable timer0
 
