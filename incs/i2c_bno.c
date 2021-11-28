@@ -844,7 +844,6 @@ bno055_gyro_raw bno055_read_gyro_I2C0(uint8_t bno_addr)
                            bno_addr);
     gyro_x = (msb << 8) | lsb;
     output.x = (short int) gyro_x;
-    lsb = 0, msb = 0;
 
     lsb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Y_LSB_ADDR,
                            bno_addr);
@@ -852,7 +851,6 @@ bno055_gyro_raw bno055_read_gyro_I2C0(uint8_t bno_addr)
                            bno_addr);
     gyro_y = (msb << 8) | lsb;
     output.y = (short int) gyro_y;
-    lsb = 0, msb = 0;
 
     lsb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Z_LSB_ADDR,
                            bno_addr);

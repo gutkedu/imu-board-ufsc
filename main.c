@@ -122,6 +122,7 @@ int main(void)
     // instructions to be used within interrupt handlers, but at the expense of
     // extra stack usage.
     FPULazyStackingEnable();
+    FPUEnable();
 
     init_led();
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x08); //led on
