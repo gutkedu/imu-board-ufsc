@@ -86,11 +86,11 @@ void Timer0IntHandler(void)
 
     // SCC 2130 gyro prints..
     //UARTprintf("%d\t",scc1.gyro);
-    UARTprintf("%d\t",scc2.gyro);
-    UARTprintf("%d\t",scc3.gyro);
-    UARTprintf("%d\t",scc4.gyro);
-    UARTprintf("%d\t",scc5.gyro);
-    UARTprintf("%d\t",scc6.gyro);
+    UARTprintf("%d\t", scc2.gyro);
+    UARTprintf("%d\t", scc3.gyro);
+    UARTprintf("%d\t", scc4.gyro);
+    UARTprintf("%d\t", scc5.gyro);
+    UARTprintf("%d\t", scc6.gyro);
 
     //Gyro BNO055 print x-y-z \t
     UARTprintf("%d \t %d \t %d\t", bno1.x, bno1.y, bno1.z);
@@ -127,6 +127,8 @@ int main(void)
     ConfigureSSI0();
     ConfigureSSI1();
     ConfigureSSI2();
+    ConfigureI2C0();
+    ConfigureI2C1();
     init_scc2130();
     init_bno055_I2C0(BNO055_I2C_ADDR1);
     init_bno055_I2C0(BNO055_I2C_ADDR2);
