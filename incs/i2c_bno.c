@@ -207,7 +207,6 @@ uint8_t read_bno055_I2C0(uint8_t t_page, uint8_t t_register, uint8_t addr)
     }
 
     ret_val = recieve_request_I2C0(addr, t_register);
-    //UARTprintf("ret_val: %d\n", ret_val);
     return ret_val;
 }
 
@@ -234,7 +233,6 @@ uint8_t read_bno055_I2C1(uint8_t t_page, uint8_t t_register, uint8_t addr)
     }
 
     ret_val = recieve_request_I2C1(addr, t_register);
-    //UARTprintf("ret_val: %d\n", ret_val);
     return ret_val;
 }
 

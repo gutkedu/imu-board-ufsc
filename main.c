@@ -61,7 +61,7 @@ void ConfigureTIMER0(void)
     SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER0);
     TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC);
     //enable Timer to read sensor data at 2.3khz, TODO: revise the calculations.
-    uint32_t ui32Period = (SysCtlClockGet() / 2300);
+    uint32_t ui32Period = (SysCtlClockGet() / 500);
     TimerLoadSet(TIMER0_BASE, TIMER_A, ui32Period - 1);
     //enable timer0 int
     IntMasterEnable(); // enable processor interrupts
@@ -84,6 +84,7 @@ void Timer0IntHandler(void)
     scc5 = read_and_process_gyro_SCC5();
     scc6 = read_and_process_gyro_SCC6();
 
+    // SCC 2130 gyro prints..
     //UARTprintf("%d\t",scc1.gyro);
     UARTprintf("%d\t",scc2.gyro);
     UARTprintf("%d\t",scc3.gyro);
@@ -97,7 +98,7 @@ void Timer0IntHandler(void)
     UARTprintf("%d \t %d \t %d\t", bno3.x, bno3.y, bno3.z);
     UARTprintf("%d \t %d \t %d\t", bno4.x, bno4.y, bno4.z);
 
-    //Temperature prints...
+    //Temperature prints... SCC from top and bottom, Bno055 top and bottom...
     UARTprintf("%d \t", scc2.temp);
     UARTprintf("%d \t", scc6.temp);
     UARTprintf("%d \t", bno055_read_temp_I2C0(BNO055_I2C_ADDR1)); // temp bno1
