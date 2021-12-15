@@ -485,11 +485,6 @@ Output_scc read_and_process_gyro_SCC6(void)
 void init_scc2130(void)
 {
 
-    //Reset all sensors
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0x00);
-    delayMs(10);
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0xff);
-
     //sensor 1 power up...
     delayMs(25);               // 25ms
     //send_request_SCC1(REQ_WRITE_FLT_60); // set output filter to 60 hz
@@ -542,5 +537,110 @@ void init_scc2130(void)
     send_request_SCC6(REQ_READ_COM_STAT1);
     send_request_SCC6(REQ_READ_STAT_SUM);
 
+}
+
+Status_scc read_scc_status(int scc)
+{
+    Status_scc output;
+    uint32_t response_comstat1;
+    uint32_t response_statsum;
+    uint32_t response_ratestat1;
+    uint32_t response_ratestat2;
+    uint32_t response_accstat;
+
+    if (scc == 1)
+    {
+        response_comstat1 = send_request_SCC1(REQ_READ_STAT_SUM);
+        response_statsum = send_request_SCC1(REQ_READ_RATE_STAT1);
+        response_ratestat1 = send_request_SCC1(REQ_READ_RATE_STAT2);
+        response_ratestat2 = send_request_SCC1(REQ_READ_ACC_STAT);
+        response_accstat = send_request_SCC1(REQ_READ_COM_STAT1);
+
+        output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
+        output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
+        output.RateStat1 = (response_ratestat1 & DATA_FIELD_MASK) >> 8;
+        output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
+        output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
+    }
+    else if (scc == 2)
+    {
+        response_comstat1 = send_request_SCC2(REQ_READ_STAT_SUM);
+        response_statsum = send_request_SCC2(REQ_READ_RATE_STAT1);
+        response_ratestat1 = send_request_SCC2(REQ_READ_RATE_STAT2);
+        response_ratestat2 = send_request_SCC2(REQ_READ_ACC_STAT);
+        response_accstat = send_request_SCC2(REQ_READ_COM_STAT1);
+
+        output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
+        output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
+        output.RateStat1 = (response_ratestat1 & DATA_FIELD_MASK) >> 8;
+        output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
+        output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
+    }
+    else if (scc == 3)
+    {
+        response_comstat1 = send_request_SCC3(REQ_READ_STAT_SUM);
+        response_statsum = send_request_SCC3(REQ_READ_RATE_STAT1);
+        response_ratestat1 = send_request_SCC3(REQ_READ_RATE_STAT2);
+        response_ratestat2 = send_request_SCC3(REQ_READ_ACC_STAT);
+        response_accstat = send_request_SCC3(REQ_READ_COM_STAT1);
+
+        output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
+        output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
+        output.RateStat1 = (response_ratestat1 & DATA_FIELD_MASK) >> 8;
+        output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
+        output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
+    }
+    else if (scc == 4)
+    {
+        response_comstat1 = send_request_SCC4(REQ_READ_STAT_SUM);
+        response_statsum = send_request_SCC4(REQ_READ_RATE_STAT1);
+        response_ratestat1 = send_request_SCC4(REQ_READ_RATE_STAT2);
+        response_ratestat2 = send_request_SCC4(REQ_READ_ACC_STAT);
+        response_accstat = send_request_SCC4(REQ_READ_COM_STAT1);
+
+        output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
+        output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
+        output.RateStat1 = (response_ratestat1 & DATA_FIELD_MASK) >> 8;
+        output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
+        output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
+    }
+    else if (scc == 5)
+    {
+        response_comstat1 = send_request_SCC5(REQ_READ_STAT_SUM);
+        response_statsum = send_request_SCC5(REQ_READ_RATE_STAT1);
+        response_ratestat1 = send_request_SCC5(REQ_READ_RATE_STAT2);
+        response_ratestat2 = send_request_SCC5(REQ_READ_ACC_STAT);
+        response_accstat = send_request_SCC5(REQ_READ_COM_STAT1);
+
+        output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
+        output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
+        output.RateStat1 = (response_ratestat1 & DATA_FIELD_MASK) >> 8;
+        output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
+        output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
+    }
+    else if (scc == 6)
+    {
+        response_comstat1 = send_request_SCC6(REQ_READ_STAT_SUM);
+        response_statsum = send_request_SCC6(REQ_READ_RATE_STAT1);
+        response_ratestat1 = send_request_SCC6(REQ_READ_RATE_STAT2);
+        response_ratestat2 = send_request_SCC6(REQ_READ_ACC_STAT);
+        response_accstat = send_request_SCC6(REQ_READ_COM_STAT1);
+
+        output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
+        output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
+        output.RateStat1 = (response_ratestat1 & DATA_FIELD_MASK) >> 8;
+        output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
+        output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
+    }
+    else
+    {
+        output.ComStat1 = 0;
+        output.StatSum = 0;
+        output.RateStat1 = 0;
+        output.RateStat2 = 0;
+        output.AccStat = 0;
+    }
+
+    return output;
 }
 
