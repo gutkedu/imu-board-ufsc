@@ -120,6 +120,11 @@ int main(void)
     FPULazyStackingEnable();
     FPUEnable();
 
+    //Reset all sensors
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0x00);
+    delayMs(10);
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0xff);
+
     init_led();
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x08); //led on
     ConfigureUART0();

@@ -32,6 +32,16 @@ typedef struct Output_scc
     signed int temp;
 } Output_scc;
 
+typedef struct Status_scc
+{
+    uint16_t StatSum;
+    uint16_t RateStat1;
+    uint16_t RateStat2;
+    uint16_t AccStat;
+    uint16_t ComStat1;
+}Status_scc;
+
+
 /***************************************************/
 /**\name    CONFIGURE SSI FUNCTIONS */
 /***************************************************/
@@ -56,5 +66,7 @@ Output_scc read_and_process_gyro_SCC6(void);
 void init_scc2130(void);
 
 void delayMs(uint32_t ui32Ms);
+
+Status_scc read_scc_status(int scc);
 
 #endif
