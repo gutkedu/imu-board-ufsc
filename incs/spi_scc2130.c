@@ -3,6 +3,7 @@
 #include "inc/hw_memmap.h"
 #include "inc/hw_ssi.h"
 #include "inc/hw_types.h"
+#include "inc/hw_gpio.h"
 #include "driverlib/debug.h"
 #include "driverlib/gpio.h"
 #include "driverlib/pin_map.h"
@@ -58,6 +59,11 @@ void ConfigureSSI1(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_SSI1);
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
+
+    //Unlock PF0
+    HWREG(GPIO_PORTF_BASE + GPIO_O_LOCK) = GPIO_LOCK_KEY;
+    HWREG(GPIO_PORTF_BASE + GPIO_O_CR) |= 0x01;
+    HWREG(GPIO_PORTF_BASE + GPIO_O_LOCK) = 0;
 
     GPIOPinConfigure(GPIO_PF2_SSI1CLK);
     GPIOPinConfigure(GPIO_PF0_SSI1RX);
