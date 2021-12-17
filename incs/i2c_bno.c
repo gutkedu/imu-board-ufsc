@@ -98,287 +98,210 @@ void ConfigureI2C1()
     HWREG(I2C1_BASE + I2C_O_FIFOCTL) = 80008000;
 }
 
-void send_request_I2C0(uint32_t t_addr, uint32_t t_register, uint32_t t_data)
+void send_request_i2c(uint32_t t_addr, uint32_t t_register, uint32_t t_data,
+                      int select_i2c)
 {
-    // Tell the master module what address it will place on the bus when communicating with the slave.
-    I2CMasterSlaveAddrSet(I2C0_BASE, t_addr, false);
-    //put data to be sent into FIFO
-    I2CMasterDataPut(I2C0_BASE, t_register);
-    //Initiate send of data from the MCU
-    I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_START);
-    // Wait until MCU is done transferring.
-    while (I2CMasterBusy(I2C0_BASE))
-        ;
-    //put last piece of data into I2C FIFO
-    I2CMasterDataPut(I2C0_BASE, t_data);
-    //send next data that was just placed into FIFO
-    I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
-    // Wait until MCU is done transferring.
-    while (I2CMasterBusy(I2C0_BASE))
-        ;
+    if (select_i2c == 0) // select i2c0
+    {
+        // Tell the master module what address it will place on the bus when communicating with the slave.
+        I2CMasterSlaveAddrSet(I2C0_BASE, t_addr, false);
+        //put data to be sent into FIFO
+        I2CMasterDataPut(I2C0_BASE, t_register);
+        //Initiate send of data from the MCU
+        I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_START);
+        // Wait until MCU is done transferring.
+        while (I2CMasterBusy(I2C0_BASE))
+            ;
+        //put last piece of data into I2C FIFO
+        I2CMasterDataPut(I2C0_BASE, t_data);
+        //send next data that was just placed into FIFO
+        I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
+        // Wait until MCU is done transferring.
+        while (I2CMasterBusy(I2C0_BASE))
+            ;
+    }
+
+    else if (select_i2c == 1) // select i2c1
+    {
+        // Tell the master module what address it will place on the bus when communicating with the slave.
+        I2CMasterSlaveAddrSet(I2C1_BASE, t_addr, false);
+        //put data to be sent into FIFO
+        I2CMasterDataPut(I2C1_BASE, t_register);
+        //Initiate send of data from the MCU
+        I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_START);
+        // Wait until MCU is done transferring.
+        while (I2CMasterBusy(I2C1_BASE))
+            ;
+        //put last piece of data into I2C FIFO
+        I2CMasterDataPut(I2C1_BASE, t_data);
+        //send next data that was just placed into FIFO
+        I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
+        // Wait until MCU is done transferring.
+        while (I2CMasterBusy(I2C1_BASE))
+            ;
+    }
+    else
+    {
+        //nothing...
+    }
 }
 
-uint32_t recieve_request_I2C0(uint32_t t_addr, uint32_t t_register)
+uint32_t recieve_request_i2c(uint32_t t_addr, uint32_t t_register, int select_i2c)
 {
-    //specify that we are writing (a register address) to the slave device
-    I2CMasterSlaveAddrSet(I2C0_BASE, t_addr, false);
-    //specify register to be read
-    I2CMasterDataPut(I2C0_BASE, t_register);
-    //send control byte and register address byte to slave device
-    I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_START);
-    //wait for MCU to finish transaction
-    while (I2CMasterBusy(I2C0_BASE))
-        ;
-    //specify that we are going to read from slave device
-    I2CMasterSlaveAddrSet(I2C0_BASE, t_addr, true);
-    //send control byte and read from the register we specified
-    I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
-    //wait for MCU to finish transaction
-    while (I2CMasterBusy(I2C0_BASE))
-        ;
-    //return data pulled from the specified register
-    I2CMasterDataGet(I2C0_BASE);
-    return I2CMasterDataGet(I2C0_BASE);
+    if (select_i2c == 0) // select i2c0
+    {
+        //specify that we are writing (a register address) to the slave device
+        I2CMasterSlaveAddrSet(I2C0_BASE, t_addr, false);
+        //specify register to be read
+        I2CMasterDataPut(I2C0_BASE, t_register);
+        //send control byte and register address byte to slave device
+        I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_BURST_SEND_START);
+        //wait for MCU to finish transaction
+        while (I2CMasterBusy(I2C0_BASE))
+            ;
+        //specify that we are going to read from slave device
+        I2CMasterSlaveAddrSet(I2C0_BASE, t_addr, true);
+        //send control byte and read from the register we specified
+        I2CMasterControl(I2C0_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
+        //wait for MCU to finish transaction
+        while (I2CMasterBusy(I2C0_BASE))
+            ;
+        //return data pulled from the specified register
+        I2CMasterDataGet(I2C0_BASE);
+        return I2CMasterDataGet(I2C0_BASE);
+
+    }
+
+    else if (select_i2c == 1) // select i2c1
+    {
+        //specify that we are writing (a register address) to the slave device
+        I2CMasterSlaveAddrSet(I2C1_BASE, t_addr, false);
+        //specify register to be read
+        I2CMasterDataPut(I2C1_BASE, t_register);
+        //send control byte and register address byte to slave device
+        I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_START);
+        //wait for MCU to finish transaction
+        while (I2CMasterBusy(I2C1_BASE))
+            ;
+        //specify that we are going to read from slave device
+        I2CMasterSlaveAddrSet(I2C1_BASE, t_addr, true);
+        //send control byte and read from the register we specified
+        I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
+        //wait for MCU to finish transaction
+        while (I2CMasterBusy(I2C1_BASE))
+            ;
+        //return data pulled from the specified register
+        I2CMasterDataGet(I2C1_BASE);
+        return I2CMasterDataGet(I2C1_BASE);
+    }
+
+    else
+    {
+        return 0;
+    }
 }
 
-void send_request_I2C1(uint32_t t_addr, uint32_t t_register, uint32_t t_data)
-{
-    // Tell the master module what address it will place on the bus when communicating with the slave.
-    I2CMasterSlaveAddrSet(I2C1_BASE, t_addr, false);
-    //put data to be sent into FIFO
-    I2CMasterDataPut(I2C1_BASE, t_register);
-    //Initiate send of data from the MCU
-    I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_START);
-    // Wait until MCU is done transferring.
-    while (I2CMasterBusy(I2C1_BASE))
-        ;
-    //put last piece of data into I2C FIFO
-    I2CMasterDataPut(I2C1_BASE, t_data);
-    //send next data that was just placed into FIFO
-    I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_FINISH);
-    // Wait until MCU is done transferring.
-    while (I2CMasterBusy(I2C1_BASE))
-        ;
-}
-
-uint32_t recieve_request_I2C1(uint32_t t_addr, uint32_t t_register)
-{
-    //specify that we are writing (a register address) to the slave device
-    I2CMasterSlaveAddrSet(I2C1_BASE, t_addr, false);
-    //specify register to be read
-    I2CMasterDataPut(I2C1_BASE, t_register);
-    //send control byte and register address byte to slave device
-    I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_BURST_SEND_START);
-    //wait for MCU to finish transaction
-    while (I2CMasterBusy(I2C1_BASE))
-        ;
-    //specify that we are going to read from slave device
-    I2CMasterSlaveAddrSet(I2C1_BASE, t_addr, true);
-    //send control byte and read from the register we specified
-    I2CMasterControl(I2C1_BASE, I2C_MASTER_CMD_SINGLE_RECEIVE);
-    //wait for MCU to finish transaction
-    while (I2CMasterBusy(I2C1_BASE))
-        ;
-    //return data pulled from the specified register
-    I2CMasterDataGet(I2C1_BASE);
-    return I2CMasterDataGet(I2C1_BASE);
-}
-
-void write_bno055_I2C0(uint8_t t_page, uint8_t t_register, uint8_t t_data,
-                       uint8_t addr)
+void write_bno055(uint8_t t_page, uint8_t t_register, uint8_t t_data,
+                  uint8_t addr, int select_i2c)
 {
     if (m_page != t_page)
     {
-        send_request_I2C0(addr, BNO055_PAGE_ID_ADDR, t_page);
+        send_request_i2c(addr, BNO055_PAGE_ID_ADDR, t_page, select_i2c);
         m_page = t_page;
     }
 
     send_request_I2C0(addr, t_register, t_data);
 }
 
-uint8_t read_bno055_I2C0(uint8_t t_page, uint8_t t_register, uint8_t addr)
+uint8_t read_bno055(uint8_t t_page, uint8_t t_register, uint8_t addr,
+                    int select_i2c)
 {
     uint32_t ret_val;
 
     if (m_page != t_page)
     {
-        send_request_I2C0(addr, BNO055_PAGE_ID_ADDR, t_page);
+        send_request_i2c(addr, BNO055_PAGE_ID_ADDR, t_page, select_i2c);
         m_page = t_page;
     }
 
-    ret_val = recieve_request_I2C0(addr, t_register);
+    ret_val = recieve_request_i2c(addr, t_register, select_i2c);
     return ret_val;
 }
 
-void write_bno055_I2C1(uint8_t t_page, uint8_t t_register, uint8_t t_data,
-                       uint8_t addr)
-{
-    if (m_page != t_page)
-    {
-        send_request_I2C1(addr, BNO055_PAGE_ID_ADDR, t_page);
-        m_page = t_page;
-    }
-
-    send_request_I2C1(addr, t_register, t_data);
-}
-
-uint8_t read_bno055_I2C1(uint8_t t_page, uint8_t t_register, uint8_t addr)
-{
-    uint32_t ret_val;
-
-    if (m_page != t_page)
-    {
-        send_request_I2C1(addr, BNO055_PAGE_ID_ADDR, t_page);
-        m_page = t_page;
-    }
-
-    ret_val = recieve_request_I2C1(addr, t_register);
-    return ret_val;
-}
-
-void set_op_mode_bno055_I2C0(uint8_t t_operation_mode, uint8_t bno_addr)
+void set_op_mode_bno055(uint8_t t_operation_mode, uint8_t bno_addr,
+                        int select_i2c)
 {
 
     uint8_t prev_operation_mode = m_operation_mode;
     if (prev_operation_mode == BNO055_OPERATION_MODE_CONFIG)
     {
-        write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
-                          t_operation_mode, bno_addr);
+        write_bno055(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR, t_operation_mode,
+                     bno_addr, select_i2c);
         SysCtlDelay(SysCtlClockGet() / 426);
     }
     else
     {
-        write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+        write_bno055(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
         BNO055_OPERATION_MODE_CONFIG,
-                          bno_addr);
+                     bno_addr, select_i2c);
         SysCtlDelay(SysCtlClockGet() / 159);
         if (t_operation_mode != BNO055_OPERATION_MODE_CONFIG)
         {
-            write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
+            write_bno055(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
             BNO055_OPERATION_MODE_CONFIG,
-                              bno_addr);
+                         bno_addr, select_i2c);
             SysCtlDelay(SysCtlClockGet() / 426);
         }
     }
     m_operation_mode = t_operation_mode;
 }
 
-void set_op_mode_bno055_I2C1(uint8_t t_operation_mode, uint8_t bno_addr)
-{
-
-    uint8_t prev_operation_mode = m_operation_mode;
-    if (prev_operation_mode == BNO055_OPERATION_MODE_CONFIG)
-    {
-        write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
-                          t_operation_mode, bno_addr);
-        SysCtlDelay(SysCtlClockGet() / 426);
-    }
-    else
-    {
-        write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
-        BNO055_OPERATION_MODE_CONFIG,
-                          bno_addr);
-        SysCtlDelay(SysCtlClockGet() / 159);
-        if (t_operation_mode != BNO055_OPERATION_MODE_CONFIG)
-        {
-            write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_OPR_MODE_ADDR,
-            BNO055_OPERATION_MODE_CONFIG,
-                              bno_addr);
-            SysCtlDelay(SysCtlClockGet() / 426);
-        }
-    }
-    m_operation_mode = t_operation_mode;
-}
-
-void set_pow_mode_bno055_I2C0(uint8_t t_power_mode, uint8_t bno_addr)
+void set_power_mode_bno055(uint8_t t_power_mode, uint8_t bno_addr,
+                           int select_i2c)
 {
 
     uint8_t prev_operation_mode = m_operation_mode;
     if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
     {
-        set_op_mode_bno055_I2C0(BNO055_OPERATION_MODE_CONFIG, bno_addr);
+        set_op_mode_bno055(BNO055_OPERATION_MODE_CONFIG, bno_addr, select_i2c);
     }
     m_power_mode = t_power_mode;
 
-    write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_PWR_MODE_ADDR, t_power_mode,
-                      bno_addr);
+    write_bno055(BNO055_PAGE_ZERO, BNO055_PWR_MODE_ADDR, t_power_mode, bno_addr,
+                 select_i2c);
     SysCtlDelay(SysCtlClockGet() / 426);
 
     if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
     {
-        set_op_mode_bno055_I2C0(prev_operation_mode, bno_addr);
+        set_op_mode_bno055(prev_operation_mode, bno_addr, select_i2c);
     }
 }
 
-void set_pow_mode_bno055_I2C1(uint8_t t_power_mode, uint8_t bno_addr)
-{
-
-    uint8_t prev_operation_mode = m_operation_mode;
-    if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
-    {
-        set_op_mode_bno055_I2C1(BNO055_OPERATION_MODE_CONFIG, bno_addr);
-    }
-    m_power_mode = t_power_mode;
-
-    write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_PWR_MODE_ADDR, t_power_mode,
-                      bno_addr);
-    SysCtlDelay(SysCtlClockGet() / 426);
-
-    if (prev_operation_mode != BNO055_OPERATION_MODE_CONFIG)
-    {
-        set_op_mode_bno055_I2C1(prev_operation_mode, bno_addr);
-    }
-}
-
-void init_bno055_I2C0(uint8_t bno_addr)
+void init_bno055(uint8_t bno_addr, int select_i2c)
 {
     // Select BNO055 config mode
-    set_op_mode_bno055_I2C0(BNO055_OPERATION_MODE_CONFIG, bno_addr);
+    set_op_mode_bno055(BNO055_OPERATION_MODE_CONFIG, bno_addr, select_i2c);
     SysCtlDelay(SysCtlClockGet() / 200); //7ms
     uint8_t hold = 0x1B;
     // Configure GYR 230 hz and 250 dps
-    write_bno055_I2C0(BNO055_PAGE_ONE, BNO055_GYRO_CONFIG_ADDR, hold, bno_addr);
-    write_bno055_I2C0(BNO055_PAGE_ONE, BNO055_GYRO_MODE_CONFIG_ADDR, 0x00,
-                      bno_addr);
+    write_bno055(BNO055_PAGE_ONE, BNO055_GYRO_CONFIG_ADDR, hold, bno_addr,
+                 select_i2c);
+    write_bno055(BNO055_PAGE_ONE, BNO055_GYRO_MODE_CONFIG_ADDR, 0x00, bno_addr,
+                 select_i2c);
 
     // Select BNO055 gyro temperature source
-    write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_TEMP_SOURCE_ADDR, 0x01,
-                      bno_addr);
+    write_bno055(BNO055_PAGE_ZERO, BNO055_TEMP_SOURCE_ADDR, 0x01, bno_addr,
+                 select_i2c);
 
     SysCtlDelay(SysCtlClockGet() / 200);
-    set_op_mode_bno055_I2C0(BNO055_OPERATION_MODE_GYRONLY, bno_addr);
+    set_op_mode_bno055(BNO055_OPERATION_MODE_GYRONLY, bno_addr, select_i2c);
     SysCtlDelay(SysCtlClockGet() / 200);
 
-    write_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_UNIT_SEL_ADDR, 0x00, bno_addr);
+    write_bno055(BNO055_PAGE_ZERO, BNO055_UNIT_SEL_ADDR, 0x00, bno_addr,
+                 select_i2c);
 
     // Select BNO055 system power mode
-    set_pow_mode_bno055_I2C0(BNO055_POWER_MODE_NORMAL, bno_addr);
-    SysCtlDelay(SysCtlClockGet() / 500);
-}
-
-void init_bno055_I2C1(uint8_t bno_addr)
-{
-    // Select BNO055 config mode
-    set_op_mode_bno055_I2C1(BNO055_OPERATION_MODE_CONFIG, bno_addr);
-    SysCtlDelay(SysCtlClockGet() / 200); //7ms
-    uint8_t hold = 0x1B;
-    // Configure GYR 230 hz and 250 dps
-    write_bno055_I2C1(BNO055_PAGE_ONE, BNO055_GYRO_CONFIG_ADDR, hold, bno_addr);
-    write_bno055_I2C1(BNO055_PAGE_ONE, BNO055_GYRO_MODE_CONFIG_ADDR, 0x00,
-                      bno_addr);
-
-    // Select BNO055 gyro temperature source
-    write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_TEMP_SOURCE_ADDR, 0x01,
-                      bno_addr);
-
-    SysCtlDelay(SysCtlClockGet() / 200);
-    set_op_mode_bno055_I2C1(BNO055_OPERATION_MODE_GYRONLY, bno_addr);
-    SysCtlDelay(SysCtlClockGet() / 200);
-
-    write_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_UNIT_SEL_ADDR, 0x00, bno_addr);
-
-    // Select BNO055 system power mode
-    set_pow_mode_bno055_I2C1(BNO055_POWER_MODE_NORMAL, bno_addr);
+    set_power_mode_bno055(BNO055_POWER_MODE_NORMAL, bno_addr, select_i2c);
     SysCtlDelay(SysCtlClockGet() / 500);
 }
 

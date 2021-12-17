@@ -415,11 +415,11 @@ Status_scc read_scc_status(int select_scc)
     }
     else if (select_scc == 6)
     {
-        response_comstat1 = send_request_SCC6(REQ_READ_STAT_SUM);
-        response_statsum = send_request_SCC6(REQ_READ_RATE_STAT1);
-        response_ratestat1 = send_request_SCC6(REQ_READ_RATE_STAT2);
-        response_ratestat2 = send_request_SCC6(REQ_READ_ACC_STAT);
-        response_accstat = send_request_SCC6(REQ_READ_COM_STAT1);
+        response_comstat1 = send_request_scc(REQ_READ_STAT_SUM, select_scc);
+        response_statsum = send_request_scc(REQ_READ_RATE_STAT1, select_scc);
+        response_ratestat1 = send_request_scc(REQ_READ_RATE_STAT2, select_scc);
+        response_ratestat2 = send_request_scc(REQ_READ_ACC_STAT, select_scc);
+        response_accstat = send_request_scc(REQ_READ_COM_STAT1, select_scc);
 
         output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
         output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;

@@ -51,9 +51,9 @@ void ConfigureSSI2(void);
 
 void init_scc2130(void);
 
-uint32_t send_request_scc(uint32_t request, int select_scc)
+uint32_t send_request_scc(uint32_t request, int select_scc);
 Status_scc read_scc_status(int scc);
-Output_scc read_process_gyro_temp_scc(int select_scc)
+Output_scc read_process_gyro_temp_scc(int select_scc);
 
 void delayMs(uint32_t ui32Ms);
 
