@@ -173,7 +173,7 @@ int main(void)
         else if (data_ready)
         {
             //print
-
+            print_gyro_scc();
             UARTprintf("\n");
             data_ready = 0;
         }
