@@ -24,6 +24,13 @@
 #define DATA_FIELD_MASK 0x00FFFF00
 #define CRC_FIELD_MASK 0x000000FF
 
+#define SCC_1 1
+#define SCC_2 2
+#define SCC_3 3
+#define SCC_4 4
+#define SCC_5 5
+#define SCC_6 6
+
 typedef struct Output_scc
 {
 /// \brief store scc2130 data
@@ -51,6 +58,7 @@ void ConfigureSSI2(void);
 
 void init_scc2130(void);
 
+//send a SPI request to the selected scc sensor
 uint32_t send_request_scc(uint32_t request, int select_scc);
 // Returns a struct with the scc2130 status in hexadecimal
 Status_scc read_scc_status(int select_scc);

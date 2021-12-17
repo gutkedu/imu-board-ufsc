@@ -82,19 +82,19 @@ void Timer0IntHandler(void)
 {
     TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT); // clear the timer interrupt
 
-    bno1 = bno055_read_gyro_I2C0(BNO055_I2C_ADDR1);
-    bno2 = bno055_read_gyro_I2C0(BNO055_I2C_ADDR2);
-    bno3 = bno055_read_gyro_I2C1(BNO055_I2C_ADDR1);
-    bno4 = bno055_read_gyro_I2C1(BNO055_I2C_ADDR2);
-    //scc1 = read_and_process_gyro_SCC1();
-    scc2 = read_and_process_gyro_SCC2();
-    scc3 = read_and_process_gyro_SCC3();
-    scc4 = read_and_process_gyro_SCC4();
-    scc5 = read_and_process_gyro_SCC5();
-    scc6 = read_and_process_gyro_SCC6();
+    bno1 = read_bno055_gyro(BNO055_I2C_ADDR1, SELECT_I2C0);
+    bno2 = read_bno055_gyro(BNO055_I2C_ADDR2, SELECT_I2C0);
+    bno3 = read_bno055_gyro(BNO055_I2C_ADDR1, SELECT_I2C1);
+    bno4 = read_bno055_gyro(BNO055_I2C_ADDR2, SELECT_I2C1);
+
+    scc1 = read_process_gyro_temp_scc(SCC_1);
+    scc2 = read_process_gyro_temp_scc(SCC_2);
+    scc3 = read_process_gyro_temp_scc(SCC_3);
+    scc4 = read_process_gyro_temp_scc(SCC_4);
+    scc5 = read_process_gyro_temp_scc(SCC_5);
+    scc6 = read_process_gyro_temp_scc(SCC_6);
 
     /*
-
      // SCC 2130 gyro prints..
      //UARTprintf("%d\t",scc1.gyro);
      UARTprintf("%d\t", scc2.gyro);
@@ -167,10 +167,12 @@ int main(void)
     ConfigureI2C0();
     ConfigureI2C1();
     init_scc2130();
-    init_bno055_I2C0(BNO055_I2C_ADDR1);
-    init_bno055_I2C0(BNO055_I2C_ADDR2);
-    init_bno055_I2C1(BNO055_I2C_ADDR1);
-    init_bno055_I2C1(BNO055_I2C_ADDR2);
+
+    init_bno055(BNO055_I2C_ADDR1, SELECT_I2C0);
+    init_bno055(BNO055_I2C_ADDR2, SELECT_I2C0);
+    init_bno055(BNO055_I2C_ADDR1, SELECT_I2C1);
+    init_bno055(BNO055_I2C_ADDR2, SELECT_I2C1);
+
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00); //led off
 
     TimerEnable(TIMER0_BASE, TIMER_A); //enable timer0
