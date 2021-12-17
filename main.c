@@ -45,6 +45,13 @@ uint8_t data_ready;
 uint8_t data_error;
 uint8_t RSdata;
 
+void print_gyro_bno055();
+void print_gyro_scc();
+void print_temperature_scc();
+void print_temperature_bno055();
+void print_scc_data_error();
+void print_scc_status();
+
 void init_led(void)
 {
     SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
@@ -62,7 +69,7 @@ void ConfigureUART0(void)
     GPIOPinConfigure(GPIO_PA1_U0TX);
     GPIOPinTypeUART(GPIO_PORTA_BASE, GPIO_PIN_0 | GPIO_PIN_1);
     UARTClockSourceSet(UART0_BASE, UART_CLOCK_PIOSC);
-    UARTStdioConfig(0, 921600, 16000000);
+    UARTStdioConfig(0, 115200, 16000000); //921600
 }
 
 void ConfigureTIMER0(void)
@@ -82,41 +89,19 @@ void Timer0IntHandler(void)
 {
     TimerIntClear(TIMER0_BASE, TIMER_TIMA_TIMEOUT); // clear the timer interrupt
 
-    bno1 = read_bno055_gyro(BNO055_I2C_ADDR1, SELECT_I2C0);
-    bno2 = read_bno055_gyro(BNO055_I2C_ADDR2, SELECT_I2C0);
-    bno3 = read_bno055_gyro(BNO055_I2C_ADDR1, SELECT_I2C1);
-    bno4 = read_bno055_gyro(BNO055_I2C_ADDR2, SELECT_I2C1);
+    /*
+     bno1 = read_bno055_gyro(BNO055_I2C_ADDR1, SELECT_I2C0);
+     bno2 = read_bno055_gyro(BNO055_I2C_ADDR2, SELECT_I2C0);
+     bno3 = read_bno055_gyro(BNO055_I2C_ADDR1, SELECT_I2C1);
+     bno4 = read_bno055_gyro(BNO055_I2C_ADDR2, SELECT_I2C1);
+     */
 
-    scc1 = read_process_gyro_temp_scc(SCC_1);
+    //scc1 = read_process_gyro_temp_scc(SCC_1);
     scc2 = read_process_gyro_temp_scc(SCC_2);
     scc3 = read_process_gyro_temp_scc(SCC_3);
     scc4 = read_process_gyro_temp_scc(SCC_4);
     scc5 = read_process_gyro_temp_scc(SCC_5);
     scc6 = read_process_gyro_temp_scc(SCC_6);
-
-    /*
-     // SCC 2130 gyro prints..
-     //UARTprintf("%d\t",scc1.gyro);
-     UARTprintf("%d\t", scc2.gyro);
-     UARTprintf("%d\t", scc3.gyro);
-     UARTprintf("%d\t", scc4.gyro);
-     UARTprintf("%d\t", scc5.gyro);
-     UARTprintf("%d\t", scc6.gyro);
-
-     //Gyro BNO055 print x-y-z \t
-     UARTprintf("%d \t %d \t %d\t", bno1.x, bno1.y, bno1.z);
-     UARTprintf("%d \t %d \t %d\t", bno2.x, bno2.y, bno2.z);
-     UARTprintf("%d \t %d \t %d\t", bno3.x, bno3.y, bno3.z);
-     UARTprintf("%d \t %d \t %d\t", bno4.x, bno4.y, bno4.z);
-
-     //Temperature prints... SCC from top and bottom, Bno055 top and bottom...
-     UARTprintf("%d \t", scc2.temp);
-     UARTprintf("%d \t", scc6.temp);
-     UARTprintf("%d \t", bno055_read_temp_I2C0(BNO055_I2C_ADDR1)); // temp bno1
-     UARTprintf("%d \n", bno055_read_temp_I2C1(BNO055_I2C_ADDR2)); // temp bno4
-
-
-     */
 
     /*
      s_scc1 = read_scc_status(1);
@@ -125,16 +110,9 @@ void Timer0IntHandler(void)
      s_scc4 = read_scc_status(4);
      s_scc5 = read_scc_status(5);
      s_scc6 = read_scc_status(6);
-
-     UARTprintf(" %x\t %x\t %x\t %x\t %x\n", s_scc6.ComStat1,
-     s_scc6.StatSum, s_scc6.RateStat1, s_scc6.RateStat2,
-     s_scc6.AccStat);
-
-
      */
 
     data_ready = 1;
-
 }
 
 /**
@@ -152,11 +130,6 @@ int main(void)
     FPULazyStackingEnable();
     FPUEnable();
 
-    //Reset all sensors
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0x00);
-    delayMs(10);
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0xff);
-
     init_led();
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x08); //led on
     ConfigureUART0();
@@ -166,8 +139,13 @@ int main(void)
     ConfigureSSI2();
     ConfigureI2C0();
     ConfigureI2C1();
-    init_scc2130();
 
+    //Reset all sensors
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0x00);
+    delayMs(10);
+    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0xff);
+
+    init_scc2130();
     init_bno055(BNO055_I2C_ADDR1, SELECT_I2C0);
     init_bno055(BNO055_I2C_ADDR2, SELECT_I2C0);
     init_bno055(BNO055_I2C_ADDR1, SELECT_I2C1);
@@ -195,9 +173,86 @@ int main(void)
         else if (data_ready)
         {
             //print
+
+            UARTprintf("\n");
+            data_ready = 0;
         }
     }
 
     return 0;
+}
+
+void print_gyro_bno055()
+{
+    //Gyro BNO055 print x-y-z \t
+    UARTprintf("%d \t %d \t %d\t", bno1.x, bno1.y, bno1.z);
+    UARTprintf("%d \t %d \t %d\t", bno2.x, bno2.y, bno2.z);
+    UARTprintf("%d \t %d \t %d\t", bno3.x, bno3.y, bno3.z);
+    UARTprintf("%d \t %d \t %d\t", bno4.x, bno4.y, bno4.z);
+}
+
+void print_gyro_scc()
+{
+    //UARTprintf("%d\t",scc1.gyro);
+    UARTprintf("%d\t", scc2.gyro);
+    UARTprintf("%d\t", scc3.gyro);
+    UARTprintf("%d\t", scc4.gyro);
+    UARTprintf("%d\t", scc5.gyro);
+    UARTprintf("%d\t", scc6.gyro);
+}
+
+void print_temperature_scc()
+{
+    //UARTprintf("%d\t",scc1.temp);
+    UARTprintf("%d\t", scc2.temp);
+    UARTprintf("%d\t", scc3.temp);
+    UARTprintf("%d\t", scc4.temp);
+    UARTprintf("%d\t", scc5.temp);
+    UARTprintf("%d\t", scc6.temp);
+}
+
+void print_temperature_bno055()
+{
+    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR1, SELECT_I2C0)); // temp bno1
+    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR2, SELECT_I2C0)); // temp bno2
+    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR1, SELECT_I2C1)); // temp bno3
+    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR2, SELECT_I2C1)); // temp bno4
+}
+
+void print_scc_data_error()
+{
+    //UARTprintf("%d\t",scc1.data_error);
+    UARTprintf("%d\t", scc2.data_error);
+    UARTprintf("%d\t", scc3.data_error);
+    UARTprintf("%d\t", scc4.data_error);
+    UARTprintf("%d\t", scc5.data_error);
+    UARTprintf("%d\t", scc6.data_error);
+}
+
+void print_scc_status()
+{
+    //SCC1
+    //   UARTprintf("%x\t %x\t %x\t %x\t %x\n", s_scc1.ComStat1, s_scc1.StatSum,
+    //         s_scc1.RateStat1, s_scc1.RateStat2, s_scc1.AccStat);
+
+    //SCC2
+    UARTprintf("%x\t %x\t %x\t %x\t %x\n", s_scc2.ComStat1, s_scc2.StatSum,
+               s_scc2.RateStat1, s_scc2.RateStat2, s_scc2.AccStat);
+
+    //SCC3
+    UARTprintf("%x\t %x\t %x\t %x\t %x\n", s_scc3.ComStat1, s_scc3.StatSum,
+               s_scc3.RateStat1, s_scc3.RateStat2, s_scc3.AccStat);
+
+    //SCC4
+    UARTprintf("%x\t %x\t %x\t %x\t %x\n", s_scc4.ComStat1, s_scc4.StatSum,
+               s_scc4.RateStat1, s_scc4.RateStat2, s_scc4.AccStat);
+
+    //SCC5
+    UARTprintf("%x\t %x\t %x\t %x\t %x\n", s_scc5.ComStat1, s_scc5.StatSum,
+               s_scc5.RateStat1, s_scc5.RateStat2, s_scc5.AccStat);
+
+    //SCC6
+    UARTprintf("%x\t %x\t %x\t %x\t %x\n", s_scc6.ComStat1, s_scc6.StatSum,
+               s_scc6.RateStat1, s_scc6.RateStat2, s_scc6.AccStat);
 }
 

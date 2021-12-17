@@ -282,7 +282,7 @@ void init_scc2130(void)
 
     //sensor 1 power up...
     delayMs(25);               // 25ms
-    //send_request_scc(REQ_WRITE_FLT_60,1); // set output filter to 60 hz
+    send_request_scc(REQ_WRITE_FLT_60, 1); // set output filter to 60 hz
     send_request_scc(REQ_WRITE_FLT_60, 2); // set output filter to 60 hz
     send_request_scc(REQ_WRITE_FLT_60, 3); // set output filter to 60 hz
     send_request_scc(REQ_WRITE_FLT_60, 4); // set output filter to 60 hz
@@ -291,11 +291,11 @@ void init_scc2130(void)
     delayMs(595);               // 595 ms;
 
     //Clear status registers for sensor 1.
-    //send_request_scc(REQ_READ_RATE_STAT1,1);
-    //send_request_scc(REQ_READ_RATE_STAT2,1);
-    //send_request_scc(REQ_READ_ACC_STAT,1);
-    //send_request_scc(REQ_READ_COM_STAT1,1);
-    //send_request_scc(REQ_READ_STAT_SUM,1);
+    send_request_scc(REQ_READ_RATE_STAT1, 1);
+    send_request_scc(REQ_READ_RATE_STAT2, 1);
+    send_request_scc(REQ_READ_ACC_STAT, 1);
+    send_request_scc(REQ_READ_COM_STAT1, 1);
+    send_request_scc(REQ_READ_STAT_SUM, 1);
 
     //Clear status registers for sensor 2.
     send_request_scc(REQ_READ_RATE_STAT1, 2);
