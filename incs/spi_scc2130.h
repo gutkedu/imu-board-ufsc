@@ -52,7 +52,9 @@ void ConfigureSSI2(void);
 void init_scc2130(void);
 
 uint32_t send_request_scc(uint32_t request, int select_scc);
-Status_scc read_scc_status(int scc);
+// Returns a struct with the scc2130 status in hexadecimal
+Status_scc read_scc_status(int select_scc);
+// Returns the output_scc (gyro, temperature and error) of a scc2130 selected sensor
 Output_scc read_process_gyro_temp_scc(int select_scc);
 
 void delayMs(uint32_t ui32Ms);

@@ -146,7 +146,8 @@ void send_request_i2c(uint32_t t_addr, uint32_t t_register, uint32_t t_data,
     }
 }
 
-uint32_t recieve_request_i2c(uint32_t t_addr, uint32_t t_register, int select_i2c)
+uint32_t recieve_request_i2c(uint32_t t_addr, uint32_t t_register,
+                             int select_i2c)
 {
     if (select_i2c == 0) // select i2c0
     {
@@ -210,7 +211,7 @@ void write_bno055(uint8_t t_page, uint8_t t_register, uint8_t t_data,
         m_page = t_page;
     }
 
-    send_request_I2C0(addr, t_register, t_data);
+    send_request_i2c(addr, t_register, t_data, select_i2c);
 }
 
 uint8_t read_bno055(uint8_t t_page, uint8_t t_register, uint8_t addr,
@@ -305,87 +306,44 @@ void init_bno055(uint8_t bno_addr, int select_i2c)
     SysCtlDelay(SysCtlClockGet() / 500);
 }
 
-bno055_gyro_raw bno055_read_gyro_I2C0(uint8_t bno_addr)
+bno055_gyro_raw read_bno055_gyro(uint8_t bno_addr, int select_i2c)
 {
     bno055_gyro_raw output;
     int8_t lsb, msb;
     int16_t gyro_x, gyro_y, gyro_z;
 
-    lsb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_X_LSB_ADDR,
-                           bno_addr);
-    msb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_X_MSB_ADDR,
-                           bno_addr);
+    lsb = read_bno055(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_X_LSB_ADDR, bno_addr,
+                      select_i2c);
+    msb = read_bno055(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_X_MSB_ADDR, bno_addr,
+                      select_i2c);
     gyro_x = (msb << 8) | lsb;
     output.x = (short int) gyro_x;
 
-    lsb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Y_LSB_ADDR,
-                           bno_addr);
-    msb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Y_MSB_ADDR,
-                           bno_addr);
+    lsb = read_bno055(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Y_LSB_ADDR, bno_addr,
+                      select_i2c);
+    msb = read_bno055(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Y_MSB_ADDR, bno_addr,
+                      select_i2c);
     gyro_y = (msb << 8) | lsb;
     output.y = (short int) gyro_y;
 
-    lsb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Z_LSB_ADDR,
-                           bno_addr);
-    msb = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Z_MSB_ADDR,
-                           bno_addr);
+    lsb = read_bno055(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Z_LSB_ADDR, bno_addr,
+                      select_i2c);
+    msb = read_bno055(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Z_MSB_ADDR, bno_addr,
+                      select_i2c);
     gyro_z = (msb << 8) | lsb;
     output.z = (short int) gyro_z;
 
     return output;
 }
 
-bno055_gyro_raw bno055_read_gyro_I2C1(uint8_t bno_addr)
-{
-    bno055_gyro_raw output;
-    int8_t lsb, msb;
-    int16_t gyro_x, gyro_y, gyro_z;
-
-    lsb = read_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_X_LSB_ADDR,
-                           bno_addr);
-    msb = read_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_X_MSB_ADDR,
-                           bno_addr);
-    gyro_x = (msb << 8) | lsb;
-    output.x = (short int) gyro_x;
-    lsb = 0, msb = 0;
-
-    lsb = read_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Y_LSB_ADDR,
-                           bno_addr);
-    msb = read_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Y_MSB_ADDR,
-                           bno_addr);
-    gyro_y = (msb << 8) | lsb;
-    output.y = (short int) gyro_y;
-    lsb = 0, msb = 0;
-
-    lsb = read_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Z_LSB_ADDR,
-                           bno_addr);
-    msb = read_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_GYRO_DATA_Z_MSB_ADDR,
-                           bno_addr);
-    gyro_z = (msb << 8) | lsb;
-    output.z = (short int) gyro_z;
-
-    return output;
-}
-
-short int bno055_read_temp_I2C0(uint8_t bno_addr)
+short int read_bno055_temp(uint8_t bno_addr, int select_i2c)
 {
 
     short int signed_degree;
     int16_t temp;
 
-    temp = read_bno055_I2C0(BNO055_PAGE_ZERO, BNO055_TEMP_ADDR, bno_addr);
-
-    signed_degree = (short int) temp;
-    return signed_degree;
-}
-
-short int bno055_read_temp_I2C1(uint8_t bno_addr)
-{
-
-    short int signed_degree;
-    int16_t temp;
-
-    temp = read_bno055_I2C1(BNO055_PAGE_ZERO, BNO055_TEMP_ADDR, bno_addr);
+    temp = read_bno055(BNO055_PAGE_ZERO, BNO055_TEMP_ADDR, bno_addr,
+                       select_i2c);
 
     signed_degree = (short int) temp;
     return signed_degree;
