@@ -25,25 +25,11 @@
 #include "incs/i2c_bno.h"
 
 //Global Variables
-bno055_gyro_raw bno1;
-bno055_gyro_raw bno2;
-bno055_gyro_raw bno3;
-bno055_gyro_raw bno4;
-Output_scc scc1;
-Output_scc scc2;
-Output_scc scc3;
-Output_scc scc4;
-Output_scc scc5;
-Output_scc scc6;
-Status_scc s_scc1;
-Status_scc s_scc2;
-Status_scc s_scc3;
-Status_scc s_scc4;
-Status_scc s_scc5;
-Status_scc s_scc6;
-uint8_t data_ready;
-uint8_t data_error;
-uint8_t RSdata;
+bno055_gyro_raw bno1, bno2, bno3, bno4;
+short int t_bno1, t_bno2, t_bno3, t_bno4;
+Output_scc scc1, scc2, scc3, scc4, scc5, scc6;
+Status_scc s_scc1, s_scc2, s_scc3, s_scc4, s_scc5, s_scc6;
+uint8_t data_ready, data_error, RSdata;
 
 void print_gyro_bno055();
 void print_gyro_scc();
@@ -110,6 +96,13 @@ void Timer0IntHandler(void)
      s_scc4 = read_scc_status(4);
      s_scc5 = read_scc_status(5);
      s_scc6 = read_scc_status(6);
+     */
+
+    /*
+     t_bno1 = read_bno055_temp(BNO055_I2C_ADDR1, SELECT_I2C0)
+     t_bno2 = read_bno055_temp(BNO055_I2C_ADDR2, SELECT_I2C0)
+     t_bno3 = read_bno055_temp(BNO055_I2C_ADDR1, SELECT_I2C1)
+     t_bno4 = read_bno055_temp(BNO055_I2C_ADDR2, SELECT_I2C1)
      */
 
     data_ready = 1;
@@ -213,10 +206,10 @@ void print_temperature_scc()
 
 void print_temperature_bno055()
 {
-    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR1, SELECT_I2C0)); // temp bno1
-    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR2, SELECT_I2C0)); // temp bno2
-    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR1, SELECT_I2C1)); // temp bno3
-    UARTprintf("%d \t", read_bno055_temp(BNO055_I2C_ADDR2, SELECT_I2C1)); // temp bno4
+    UARTprintf("%d \t", t_bno1); // temp bno1
+    UARTprintf("%d \t", t_bno2); // temp bno2
+    UARTprintf("%d \t", t_bno3); // temp bno3
+    UARTprintf("%d \t", t_bno4); // temp bno4
 }
 
 void print_scc_data_error()
