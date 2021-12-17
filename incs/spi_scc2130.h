@@ -30,6 +30,7 @@ typedef struct Output_scc
 /// \returns a struct with the scc2130 temperature and gyro data.
     signed int gyro;
     signed int temp;
+    bool data_error;
 } Output_scc;
 
 typedef struct Status_scc
@@ -39,8 +40,7 @@ typedef struct Status_scc
     uint16_t RateStat2;
     uint16_t AccStat;
     uint16_t ComStat1;
-}Status_scc;
-
+} Status_scc;
 
 /***************************************************/
 /**\name    CONFIGURE SSI FUNCTIONS */
@@ -49,24 +49,12 @@ void ConfigureSSI0(void);
 void ConfigureSSI1(void);
 void ConfigureSSI2(void);
 
-uint32_t send_request_SCC1(uint32_t request);
-uint32_t send_request_SCC2(uint32_t request);
-uint32_t send_request_SCC3(uint32_t request);
-uint32_t send_request_SCC4(uint32_t request);
-uint32_t send_request_SCC5(uint32_t request);
-uint32_t send_request_SCC6(uint32_t request);
-
-Output_scc read_and_process_gyro_SCC1(void);
-Output_scc read_and_process_gyro_SCC2(void);
-Output_scc read_and_process_gyro_SCC3(void);
-Output_scc read_and_process_gyro_SCC4(void);
-Output_scc read_and_process_gyro_SCC5(void);
-Output_scc read_and_process_gyro_SCC6(void);
-
 void init_scc2130(void);
 
-void delayMs(uint32_t ui32Ms);
-
+uint32_t send_request_scc(uint32_t request, int select_scc)
 Status_scc read_scc_status(int scc);
+Output_scc read_process_gyro_temp_scc(int select_scc)
+
+void delayMs(uint32_t ui32Ms);
 
 #endif

@@ -104,388 +104,177 @@ void ConfigureSSI2(void)
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0xff);    // Chip select high
 }
 
-// Send Request to SCC1
-uint32_t send_request_SCC1(uint32_t request)
+// Send Request to SCCs
+uint32_t send_request_scc(uint32_t request, int select_scc)
 {
+
     uint32_t response;
     uint32_t temp;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0x00); // Chip select on
-    SSIDataGetNonBlocking(SSI0_BASE, &temp); // read rx buffer to clear it.
-    temp = 0x00;
+    if (select_scc == 1)
+    {
+        uint32_t response;
+        uint32_t temp;
 
-    SSIDataPut(SSI0_BASE, request >> 16);
-    while (SSIBusy(SSI0_BASE))
-        ; // wait until the busy bit is cleared
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0x00); // Chip select on
+        SSIDataGetNonBlocking(SSI0_BASE, &temp); // read rx buffer to clear it.
+        temp = 0x00;
 
-    SSIDataGet(SSI0_BASE, &temp); // Read response high word
-    response = temp <<= 16;
-    temp = 0x00;
+        SSIDataPut(SSI0_BASE, request >> 16);
+        while (SSIBusy(SSI0_BASE))
+            ; // wait until the busy bit is cleared
 
-    SSIDataPut(SSI0_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy(SSI0_BASE))
-        ;
+        SSIDataGet(SSI0_BASE, &temp); // Read response high word
+        response = temp <<= 16;
+        temp = 0x00;
 
-    SSIDataGet(SSI0_BASE, &temp); // Read response low word
-    response = response | temp;
+        SSIDataPut(SSI0_BASE, request & 0x000FFFF); //send request low word
+        while (SSIBusy(SSI0_BASE))
+            ;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0xff);
+        SSIDataGet(SSI0_BASE, &temp); // Read response low word
+        response = response | temp;
 
-    return response;
-}
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_0, 0xff);
+    }
 
-// Send Request to SCC2
-uint32_t send_request_SCC2(uint32_t request)
-{
-    uint32_t response;
-    uint32_t temp;
+    else if (select_scc == 2)
+    {
+        uint32_t response;
+        uint32_t temp;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0x00); // Chip select on
-    SSIDataGetNonBlocking(SSI0_BASE, &temp); // read rx buffer to clear it.
-    temp = 0x00;
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0x00); // Chip select on
+        SSIDataGetNonBlocking(SSI0_BASE, &temp); // read rx buffer to clear it.
+        temp = 0x00;
 
-    SSIDataPut(SSI0_BASE, request >> 16);
-    while (SSIBusy(SSI0_BASE))
-        ;
-    // wait until the busy bit is cleared
-    SSIDataGet(SSI0_BASE, &temp); // Read response high word
-    response = temp <<= 16;
-    temp = 0x00;
+        SSIDataPut(SSI0_BASE, request >> 16);
+        while (SSIBusy(SSI0_BASE))
+            ;
+        // wait until the busy bit is cleared
+        SSIDataGet(SSI0_BASE, &temp); // Read response high word
+        response = temp <<= 16;
+        temp = 0x00;
 
-    SSIDataPut(SSI0_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy(SSI0_BASE))
-        ;
+        SSIDataPut(SSI0_BASE, request & 0x000FFFF); //send request low word
+        while (SSIBusy(SSI0_BASE))
+            ;
 
-    SSIDataGet(SSI0_BASE, &temp); // Read response low word
-    response = response | temp;
+        SSIDataGet(SSI0_BASE, &temp); // Read response low word
+        response = response | temp;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0xff);
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_1, 0xff);
+    }
 
-    return response;
-}
+    else if (select_scc == 3)
+    {
+        uint32_t response;
+        uint32_t temp;
 
-// Send Request to SCC3
-uint32_t send_request_SCC3(uint32_t request)
-{
-    uint32_t response;
-    uint32_t temp;
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_3, 0x00); // Chip select on
+        SSIDataGetNonBlocking(SSI1_BASE, &temp); // read rx buffer to clear it.
+        temp = 0x00;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_3, 0x00); // Chip select on
-    SSIDataGetNonBlocking(SSI1_BASE, &temp); // read rx buffer to clear it.
-    temp = 0x00;
+        SSIDataPut(SSI1_BASE, request >> 16);
+        while (SSIBusy(SSI1_BASE))
+            ;
+        // wait until the busy bit is cleared
+        SSIDataGet(SSI1_BASE, &temp); // Read response high word
+        response = temp <<= 16;
+        temp = 0x00;
 
-    SSIDataPut(SSI1_BASE, request >> 16);
-    while (SSIBusy(SSI1_BASE))
-        ;
-    // wait until the busy bit is cleared
-    SSIDataGet(SSI1_BASE, &temp); // Read response high word
-    response = temp <<= 16;
-    temp = 0x00;
+        SSIDataPut(SSI1_BASE, request & 0x000FFFF); //send request low word
+        while (SSIBusy(SSI1_BASE))
+            ;
 
-    SSIDataPut(SSI1_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy(SSI1_BASE))
-        ;
+        SSIDataGet(SSI1_BASE, &temp); // Read response low word
+        response = response | temp;
 
-    SSIDataGet(SSI1_BASE, &temp); // Read response low word
-    response = response | temp;
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_3, 0xff);
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_3, 0xff);
+        return response;
+    }
 
-    return response;
-}
+    else if (select_scc == 4)
+    {
+        uint32_t response;
+        uint32_t temp;
 
-// Send Request to SCC4
-uint32_t send_request_SCC4(uint32_t request)
-{
-    uint32_t response;
-    uint32_t temp;
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_4, 0x00); // Chip select on
+        SSIDataGetNonBlocking(SSI1_BASE, &temp); // read rx buffer to clear it.
+        temp = 0x00;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_4, 0x00); // Chip select on
-    SSIDataGetNonBlocking(SSI1_BASE, &temp); // read rx buffer to clear it.
-    temp = 0x00;
+        SSIDataPut(SSI1_BASE, request >> 16);
+        while (SSIBusy(SSI1_BASE))
+            ;
+        // wait until the busy bit is cleared
+        SSIDataGet(SSI1_BASE, &temp); // Read response high word
+        response = temp <<= 16;
+        temp = 0x00;
 
-    SSIDataPut(SSI1_BASE, request >> 16);
-    while (SSIBusy(SSI1_BASE))
-        ;
-    // wait until the busy bit is cleared
-    SSIDataGet(SSI1_BASE, &temp); // Read response high word
-    response = temp <<= 16;
-    temp = 0x00;
+        SSIDataPut(SSI1_BASE, request & 0x000FFFF); //send request low word
+        while (SSIBusy(SSI1_BASE))
+            ;
 
-    SSIDataPut(SSI1_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy(SSI1_BASE))
-        ;
+        SSIDataGet(SSI1_BASE, &temp); // Read response low word
+        response = response | temp;
 
-    SSIDataGet(SSI1_BASE, &temp); // Read response low word
-    response = response | temp;
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_4, 0xff);
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_4, 0xff);
+    }
+    else if (select_scc == 5)
+    {
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_5, 0x00); // Chip select on
+        SSIDataGetNonBlocking(SSI2_BASE, &temp); // read rx buffer to clear it.
+        temp = 0x00;
 
-    return response;
-}
+        SSIDataPut(SSI2_BASE, request >> 16);
+        while (SSIBusy(SSI2_BASE))
+            ;
+        // wait until the busy bit is cleared
+        SSIDataGet(SSI2_BASE, &temp); // Read response high word
+        response = temp <<= 16;
+        temp = 0x00;
 
-// Send Request to SCC5
-uint32_t send_request_SCC5(uint32_t request)
-{
-    uint32_t response;
-    uint32_t temp;
+        SSIDataPut(SSI2_BASE, request & 0x000FFFF); //send request low word
+        while (SSIBusy(SSI2_BASE))
+            ;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_5, 0x00); // Chip select on
-    SSIDataGetNonBlocking(SSI2_BASE, &temp); // read rx buffer to clear it.
-    temp = 0x00;
+        SSIDataGet(SSI2_BASE, &temp); // Read response low word
+        response = response | temp;
 
-    SSIDataPut(SSI2_BASE, request >> 16);
-    while (SSIBusy(SSI2_BASE))
-        ;
-    // wait until the busy bit is cleared
-    SSIDataGet(SSI2_BASE, &temp); // Read response high word
-    response = temp <<= 16;
-    temp = 0x00;
+        GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_5, 0xff);
+    }
 
-    SSIDataPut(SSI2_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy(SSI2_BASE))
-        ;
+    else if (select_scc == 6)
+    {
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00); // Chip select on
+        SSIDataGetNonBlocking(SSI2_BASE, &temp); // read rx buffer to clear it.
+        temp = 0x00;
 
-    SSIDataGet(SSI2_BASE, &temp); // Read response low word
-    response = response | temp;
+        SSIDataPut(SSI2_BASE, request >> 16);
+        while (SSIBusy(SSI2_BASE))
+            ;
+        // wait until the busy bit is cleared
+        SSIDataGet(SSI2_BASE, &temp); // Read response high word
+        response = temp <<= 16;
+        temp = 0x00;
 
-    GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_5, 0xff);
+        SSIDataPut(SSI2_BASE, request & 0x000FFFF); //send request low word
+        while (SSIBusy(SSI2_BASE))
+            ;
 
-    return response;
-}
+        SSIDataGet(SSI2_BASE, &temp); // Read response low word
+        response = response | temp;
 
-// Send Request to SCC6
-uint32_t send_request_SCC6(uint32_t request)
-{
-    uint32_t response;
-    uint32_t temp;
+        GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0xff);
+    }
 
-    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00); // Chip select on
-    SSIDataGetNonBlocking(SSI2_BASE, &temp); // read rx buffer to clear it.
-    temp = 0x00;
-
-    SSIDataPut(SSI2_BASE, request >> 16);
-    while (SSIBusy(SSI2_BASE))
-        ;
-    // wait until the busy bit is cleared
-    SSIDataGet(SSI2_BASE, &temp); // Read response high word
-    response = temp <<= 16;
-    temp = 0x00;
-
-    SSIDataPut(SSI2_BASE, request & 0x000FFFF); //send request low word
-    while (SSIBusy(SSI2_BASE))
-        ;
-
-    SSIDataGet(SSI2_BASE, &temp); // Read response low word
-    response = response | temp;
-
-    GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0xff);
+    else
+    {
+        response = 0x00;
+    }
 
     return response;
-}
-
-Output_scc read_and_process_gyro_SCC1(void)
-{
-    uint16_t rate;
-    uint16_t temp;
-    uint32_t response_temp;
-    uint32_t response_rate;
-    uint32_t result_rate;
-    uint32_t result_temp;
-    uint8_t RSdata;
-    Output_scc output;
-
-    response_temp = send_request_SCC1(REQ_READ_RATE);
-    response_rate = send_request_SCC1(REQ_READ_TEMP);
-
-    //Handle rate data
-    rate = (response_rate & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_rate & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    //Handle temperature data
-    temp = (response_temp & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_temp & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    result_rate = rate;
-    output.gyro = (short int) result_rate;
-    result_temp = temp;
-    output.temp = (short int) result_temp;
-
-    return output;
-
-}
-
-Output_scc read_and_process_gyro_SCC2(void)
-{
-    uint16_t rate;
-    uint16_t temp;
-    uint32_t response_temp;
-    uint32_t response_rate;
-    uint32_t result_rate;
-    uint32_t result_temp;
-    uint8_t RSdata;
-    Output_scc output;
-
-    response_temp = send_request_SCC2(REQ_READ_RATE);
-    response_rate = send_request_SCC2(REQ_READ_TEMP);
-
-    //Handle rate data
-    rate = (response_rate & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_rate & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    //Handle temperature data
-    temp = (response_temp & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_temp & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    result_rate = rate;
-    output.gyro = (short int) result_rate;
-    result_temp = temp;
-    output.temp = (short int) result_temp;
-
-    return output;
-}
-
-Output_scc read_and_process_gyro_SCC3(void)
-{
-    uint16_t rate;
-    uint16_t temp;
-    uint32_t response_temp;
-    uint32_t response_rate;
-    uint32_t result_rate;
-    uint32_t result_temp;
-    uint8_t RSdata;
-    Output_scc output;
-
-    response_temp = send_request_SCC3(REQ_READ_RATE);
-    response_rate = send_request_SCC3(REQ_READ_TEMP);
-
-    //Handle rate data
-    rate = (response_rate & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_rate & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    //Handle temperature data
-    temp = (response_temp & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_temp & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-    result_rate = rate;
-    output.gyro = (short int) result_rate;
-    result_temp = temp;
-    output.temp = (short int) result_temp;
-
-    return output;
-}
-
-Output_scc read_and_process_gyro_SCC4(void)
-{
-    uint16_t rate;
-    uint16_t temp;
-    uint32_t response_temp;
-    uint32_t response_rate;
-    uint32_t result_rate;
-    uint32_t result_temp;
-    uint8_t RSdata;
-    Output_scc output;
-
-    response_temp = send_request_SCC4(REQ_READ_RATE);
-    response_rate = send_request_SCC4(REQ_READ_TEMP);
-
-    //Handle rate data
-    rate = (response_rate & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_rate & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    //Handle temperature data
-    temp = (response_temp & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_temp & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    result_rate = rate;
-    output.gyro = (short int) result_rate;
-    result_temp = temp;
-    output.temp = (short int) result_temp;
-
-    return output;
-}
-
-Output_scc read_and_process_gyro_SCC5(void)
-{
-    uint16_t rate;
-    uint16_t temp;
-    uint32_t response_temp;
-    uint32_t response_rate;
-    uint32_t result_rate;
-    uint32_t result_temp;
-    uint8_t RSdata;
-    Output_scc output;
-
-    response_temp = send_request_SCC5(REQ_READ_RATE);
-    response_rate = send_request_SCC5(REQ_READ_TEMP);
-
-    //Handle rate data
-    rate = (response_rate & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_rate & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    //Handle temperature data
-    temp = (response_temp & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_temp & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    result_rate = rate;
-    output.gyro = (short int) result_rate;
-    result_temp = temp;
-    output.temp = (short int) result_temp;
-
-    return output;
-}
-
-Output_scc read_and_process_gyro_SCC6(void)
-{
-    uint16_t rate;
-    uint16_t temp;
-    uint32_t response_temp;
-    uint32_t response_rate;
-    uint32_t result_rate;
-    uint32_t result_temp;
-    uint8_t RSdata;
-    Output_scc output;
-
-    response_temp = send_request_SCC6(REQ_READ_RATE);
-    response_rate = send_request_SCC6(REQ_READ_TEMP);
-
-    //Handle rate data
-    rate = (response_rate & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_rate & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    //Handle temperature data
-    temp = (response_temp & DATA_FIELD_MASK) >> 8;
-    RSdata = (response_temp & RS_FIELD_MASK) >> 24;
-    if (RSdata != 1)
-        data_error = true;
-
-    result_rate = rate;
-    output.gyro = (short int) result_rate;
-    result_temp = temp;
-    output.temp = (short int) result_temp;
-
-    return output;
 }
 
 void init_scc2130(void)
@@ -493,59 +282,59 @@ void init_scc2130(void)
 
     //sensor 1 power up...
     delayMs(25);               // 25ms
-    //send_request_SCC1(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    send_request_SCC2(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    send_request_SCC3(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    send_request_SCC4(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    send_request_SCC5(REQ_WRITE_FLT_60); // set output filter to 60 hz
-    send_request_SCC6(REQ_WRITE_FLT_60); // set output filter to 60 hz
+    //send_request_scc(REQ_WRITE_FLT_60,1); // set output filter to 60 hz
+    send_request_scc(REQ_WRITE_FLT_60, 2); // set output filter to 60 hz
+    send_request_scc(REQ_WRITE_FLT_60, 3); // set output filter to 60 hz
+    send_request_scc(REQ_WRITE_FLT_60, 4); // set output filter to 60 hz
+    send_request_scc(REQ_WRITE_FLT_60, 5); // set output filter to 60 hz
+    send_request_scc(REQ_WRITE_FLT_60, 6); // set output filter to 60 hz
     delayMs(595);               // 595 ms;
 
     //Clear status registers for sensor 1.
-    //send_request_SCC1(REQ_READ_RATE_STAT1);
-    //send_request_SCC1(REQ_READ_RATE_STAT2);
-    //send_request_SCC1(REQ_READ_ACC_STAT);
-    //send_request_SCC1(REQ_READ_COM_STAT1);
-    //send_request_SCC1(REQ_READ_STAT_SUM);
+    //send_request_scc(REQ_READ_RATE_STAT1,1);
+    //send_request_scc(REQ_READ_RATE_STAT2,1);
+    //send_request_scc(REQ_READ_ACC_STAT,1);
+    //send_request_scc(REQ_READ_COM_STAT1,1);
+    //send_request_scc(REQ_READ_STAT_SUM,1);
 
     //Clear status registers for sensor 2.
-    send_request_SCC2(REQ_READ_RATE_STAT1);
-    send_request_SCC2(REQ_READ_RATE_STAT2);
-    send_request_SCC2(REQ_READ_ACC_STAT);
-    send_request_SCC2(REQ_READ_COM_STAT1);
-    send_request_SCC2(REQ_READ_STAT_SUM);
+    send_request_scc(REQ_READ_RATE_STAT1, 2);
+    send_request_scc(REQ_READ_RATE_STAT2, 2);
+    send_request_scc(REQ_READ_ACC_STAT, 2);
+    send_request_scc(REQ_READ_COM_STAT1, 2);
+    send_request_scc(REQ_READ_STAT_SUM, 2);
 
     //Clear status registers for sensor 3.
-    send_request_SCC3(REQ_READ_RATE_STAT1);
-    send_request_SCC3(REQ_READ_RATE_STAT2);
-    send_request_SCC3(REQ_READ_ACC_STAT);
-    send_request_SCC3(REQ_READ_COM_STAT1);
-    send_request_SCC3(REQ_READ_STAT_SUM);
+    send_request_scc(REQ_READ_RATE_STAT1, 3);
+    send_request_scc(REQ_READ_RATE_STAT2, 3);
+    send_request_scc(REQ_READ_ACC_STAT, 3);
+    send_request_scc(REQ_READ_COM_STAT1, 3);
+    send_request_scc(REQ_READ_STAT_SUM, 3);
 
     //Clear status registers for sensor 4.
-    send_request_SCC4(REQ_READ_RATE_STAT1);
-    send_request_SCC4(REQ_READ_RATE_STAT2);
-    send_request_SCC4(REQ_READ_ACC_STAT);
-    send_request_SCC4(REQ_READ_COM_STAT1);
-    send_request_SCC4(REQ_READ_STAT_SUM);
+    send_request_scc(REQ_READ_RATE_STAT1, 4);
+    send_request_scc(REQ_READ_RATE_STAT2, 4);
+    send_request_scc(REQ_READ_ACC_STAT, 4);
+    send_request_scc(REQ_READ_COM_STAT1, 4);
+    send_request_scc(REQ_READ_STAT_SUM, 4);
 
     //Clear status registers for sensor 5.
-    send_request_SCC5(REQ_READ_RATE_STAT1);
-    send_request_SCC5(REQ_READ_RATE_STAT2);
-    send_request_SCC5(REQ_READ_ACC_STAT);
-    send_request_SCC5(REQ_READ_COM_STAT1);
-    send_request_SCC5(REQ_READ_STAT_SUM);
+    send_request_scc(REQ_READ_RATE_STAT1, 5);
+    send_request_scc(REQ_READ_RATE_STAT2, 5);
+    send_request_scc(REQ_READ_ACC_STAT, 5);
+    send_request_scc(REQ_READ_COM_STAT1, 5);
+    send_request_scc(REQ_READ_STAT_SUM, 5);
 
     //Clear status registers for sensor 6.
-    send_request_SCC6(REQ_READ_RATE_STAT1);
-    send_request_SCC6(REQ_READ_RATE_STAT2);
-    send_request_SCC6(REQ_READ_ACC_STAT);
-    send_request_SCC6(REQ_READ_COM_STAT1);
-    send_request_SCC6(REQ_READ_STAT_SUM);
+    send_request_scc(REQ_READ_RATE_STAT1, 6);
+    send_request_scc(REQ_READ_RATE_STAT2, 6);
+    send_request_scc(REQ_READ_ACC_STAT, 6);
+    send_request_scc(REQ_READ_COM_STAT1, 6);
+    send_request_scc(REQ_READ_STAT_SUM, 6);
 
 }
 
-Status_scc read_scc_status(int scc)
+Status_scc read_scc_status(int select_scc)
 {
     Status_scc output;
     uint32_t response_comstat1;
@@ -554,13 +343,13 @@ Status_scc read_scc_status(int scc)
     uint32_t response_ratestat2;
     uint32_t response_accstat;
 
-    if (scc == 1)
+    if (select_scc == 1)
     {
-        response_comstat1 = send_request_SCC1(REQ_READ_STAT_SUM);
-        response_statsum = send_request_SCC1(REQ_READ_RATE_STAT1);
-        response_ratestat1 = send_request_SCC1(REQ_READ_RATE_STAT2);
-        response_ratestat2 = send_request_SCC1(REQ_READ_ACC_STAT);
-        response_accstat = send_request_SCC1(REQ_READ_COM_STAT1);
+        response_comstat1 = send_request_scc(REQ_READ_STAT_SUM, select_scc);
+        response_statsum = send_request_scc(REQ_READ_RATE_STAT1, select_scc);
+        response_ratestat1 = send_request_scc(REQ_READ_RATE_STAT2, select_scc);
+        response_ratestat2 = send_request_scc(REQ_READ_ACC_STAT, select_scc);
+        response_accstat = send_request_scc(REQ_READ_COM_STAT1, select_scc);
 
         output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
         output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
@@ -568,13 +357,13 @@ Status_scc read_scc_status(int scc)
         output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
         output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
     }
-    else if (scc == 2)
+    else if (select_scc == 2)
     {
-        response_comstat1 = send_request_SCC2(REQ_READ_STAT_SUM);
-        response_statsum = send_request_SCC2(REQ_READ_RATE_STAT1);
-        response_ratestat1 = send_request_SCC2(REQ_READ_RATE_STAT2);
-        response_ratestat2 = send_request_SCC2(REQ_READ_ACC_STAT);
-        response_accstat = send_request_SCC2(REQ_READ_COM_STAT1);
+        response_comstat1 = send_request_scc(REQ_READ_STAT_SUM, select_scc);
+        response_statsum = send_request_scc(REQ_READ_RATE_STAT1, select_scc);
+        response_ratestat1 = send_request_scc(REQ_READ_RATE_STAT2, select_scc);
+        response_ratestat2 = send_request_scc(REQ_READ_ACC_STAT, select_scc);
+        response_accstat = send_request_scc(REQ_READ_COM_STAT1, select_scc);
 
         output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
         output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
@@ -582,13 +371,13 @@ Status_scc read_scc_status(int scc)
         output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
         output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
     }
-    else if (scc == 3)
+    else if (select_scc == 3)
     {
-        response_comstat1 = send_request_SCC3(REQ_READ_STAT_SUM);
-        response_statsum = send_request_SCC3(REQ_READ_RATE_STAT1);
-        response_ratestat1 = send_request_SCC3(REQ_READ_RATE_STAT2);
-        response_ratestat2 = send_request_SCC3(REQ_READ_ACC_STAT);
-        response_accstat = send_request_SCC3(REQ_READ_COM_STAT1);
+        response_comstat1 = send_request_scc(REQ_READ_STAT_SUM, select_scc);
+        response_statsum = send_request_scc(REQ_READ_RATE_STAT1, select_scc);
+        response_ratestat1 = send_request_scc(REQ_READ_RATE_STAT2, select_scc);
+        response_ratestat2 = send_request_scc(REQ_READ_ACC_STAT, select_scc);
+        response_accstat = send_request_scc(REQ_READ_COM_STAT1, select_scc);
 
         output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
         output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
@@ -596,13 +385,13 @@ Status_scc read_scc_status(int scc)
         output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
         output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
     }
-    else if (scc == 4)
+    else if (select_scc == 4)
     {
-        response_comstat1 = send_request_SCC4(REQ_READ_STAT_SUM);
-        response_statsum = send_request_SCC4(REQ_READ_RATE_STAT1);
-        response_ratestat1 = send_request_SCC4(REQ_READ_RATE_STAT2);
-        response_ratestat2 = send_request_SCC4(REQ_READ_ACC_STAT);
-        response_accstat = send_request_SCC4(REQ_READ_COM_STAT1);
+        response_comstat1 = send_request_scc(REQ_READ_STAT_SUM, select_scc);
+        response_statsum = send_request_scc(REQ_READ_RATE_STAT1, select_scc);
+        response_ratestat1 = send_request_scc(REQ_READ_RATE_STAT2, select_scc);
+        response_ratestat2 = send_request_scc(REQ_READ_ACC_STAT, select_scc);
+        response_accstat = send_request_scc(REQ_READ_COM_STAT1, select_scc);
 
         output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
         output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
@@ -610,13 +399,13 @@ Status_scc read_scc_status(int scc)
         output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
         output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
     }
-    else if (scc == 5)
+    else if (select_scc == 5)
     {
-        response_comstat1 = send_request_SCC5(REQ_READ_STAT_SUM);
-        response_statsum = send_request_SCC5(REQ_READ_RATE_STAT1);
-        response_ratestat1 = send_request_SCC5(REQ_READ_RATE_STAT2);
-        response_ratestat2 = send_request_SCC5(REQ_READ_ACC_STAT);
-        response_accstat = send_request_SCC5(REQ_READ_COM_STAT1);
+        response_comstat1 = send_request_scc(REQ_READ_STAT_SUM, select_scc);
+        response_statsum = send_request_scc(REQ_READ_RATE_STAT1, select_scc);
+        response_ratestat1 = send_request_scc(REQ_READ_RATE_STAT2, select_scc);
+        response_ratestat2 = send_request_scc(REQ_READ_ACC_STAT, select_scc);
+        response_accstat = send_request_scc(REQ_READ_COM_STAT1, select_scc);
 
         output.ComStat1 = (response_comstat1 & DATA_FIELD_MASK) >> 8;
         output.StatSum = (response_statsum & DATA_FIELD_MASK) >> 8;
@@ -624,7 +413,7 @@ Status_scc read_scc_status(int scc)
         output.RateStat2 = (response_ratestat2 & DATA_FIELD_MASK) >> 8;
         output.AccStat = (response_accstat & DATA_FIELD_MASK) >> 8;
     }
-    else if (scc == 6)
+    else if (select_scc == 6)
     {
         response_comstat1 = send_request_SCC6(REQ_READ_STAT_SUM);
         response_statsum = send_request_SCC6(REQ_READ_RATE_STAT1);
@@ -645,6 +434,154 @@ Status_scc read_scc_status(int scc)
         output.RateStat1 = 0;
         output.RateStat2 = 0;
         output.AccStat = 0;
+    }
+
+    return output;
+}
+
+Output_scc read_process_gyro_temp_scc(int select_scc)
+{
+    uint16_t rate;
+    uint16_t temp;
+    uint32_t response_temp;
+    uint32_t response_rate;
+    uint8_t RSdata;
+    Output_scc output;
+
+    if (select_scc == 1)
+    {
+        response_temp = send_request_scc(REQ_READ_RATE, select_scc);
+        response_rate = send_request_scc(REQ_READ_TEMP, select_scc);
+
+        //Handle rate data
+        rate = (response_rate & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_rate & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        //Handle temperature data
+        temp = (response_temp & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_temp & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        output.gyro = (short int) rate;
+        output.temp = (short int) temp;
+        output.data_error = data_error;
+    }
+
+    else if (select_scc == 2)
+    {
+        response_temp = send_request_scc(REQ_READ_RATE, select_scc);
+        response_rate = send_request_scc(REQ_READ_TEMP, select_scc);
+
+        //Handle rate data
+        rate = (response_rate & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_rate & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        //Handle temperature data
+        temp = (response_temp & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_temp & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        output.gyro = (short int) rate;
+        output.temp = (short int) temp;
+        output.data_error = data_error;
+    }
+    else if (select_scc == 3)
+    {
+        response_temp = send_request_scc(REQ_READ_RATE, select_scc);
+        response_rate = send_request_scc(REQ_READ_TEMP, select_scc);
+
+        //Handle rate data
+        rate = (response_rate & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_rate & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        //Handle temperature data
+        temp = (response_temp & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_temp & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        output.gyro = (short int) rate;
+        output.temp = (short int) temp;
+        output.data_error = data_error;
+    }
+    else if (select_scc == 4)
+    {
+        response_temp = send_request_scc(REQ_READ_RATE, select_scc);
+        response_rate = send_request_scc(REQ_READ_TEMP, select_scc);
+
+        //Handle rate data
+        rate = (response_rate & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_rate & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        //Handle temperature data
+        temp = (response_temp & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_temp & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        output.gyro = (short int) rate;
+        output.temp = (short int) temp;
+        output.data_error = data_error;
+    }
+    else if (select_scc == 5)
+    {
+        response_temp = send_request_scc(REQ_READ_RATE, select_scc);
+        response_rate = send_request_scc(REQ_READ_TEMP, select_scc);
+
+        //Handle rate data
+        rate = (response_rate & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_rate & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        //Handle temperature data
+        temp = (response_temp & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_temp & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        output.gyro = (short int) rate;
+        output.temp = (short int) temp;
+        output.data_error = data_error;
+    }
+
+    else if (select_scc == 6)
+    {
+        response_temp = send_request_scc(REQ_READ_RATE, select_scc);
+        response_rate = send_request_scc(REQ_READ_TEMP, select_scc);
+
+        //Handle rate data
+        rate = (response_rate & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_rate & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        //Handle temperature data
+        temp = (response_temp & DATA_FIELD_MASK) >> 8;
+        RSdata = (response_temp & RS_FIELD_MASK) >> 24;
+        if (RSdata != 1)
+            data_error = true;
+
+        output.gyro = (short int) rate;
+        output.temp = (short int) temp;
+        output.data_error = data_error;
+    }
+
+    else
+    {
+        output.gyro = 0;
+        output.temp = 0;
+        output.data_error = false;
     }
 
     return output;
