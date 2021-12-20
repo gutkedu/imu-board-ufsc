@@ -35,8 +35,8 @@ typedef struct Output_scc
 {
 /// \brief store scc2130 data
 /// \returns a struct with the scc2130 temperature and gyro data.
-    signed int gyro;
-    signed int temp;
+    short int gyro;
+    short int temp;
     bool data_error;
 } Output_scc;
 
