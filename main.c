@@ -139,10 +139,12 @@ int main(void)
     GPIOPinWrite(GPIO_PORTE_BASE, GPIO_PIN_2, 0xff);
 
     init_scc2130();
+    /*
     init_bno055(BNO055_I2C_ADDR1, SELECT_I2C0);
     init_bno055(BNO055_I2C_ADDR2, SELECT_I2C0);
     init_bno055(BNO055_I2C_ADDR1, SELECT_I2C1);
     init_bno055(BNO055_I2C_ADDR2, SELECT_I2C1);
+    */
 
     GPIOPinWrite(GPIO_PORTF_BASE, GPIO_PIN_3, 0x00); //led off
 
@@ -154,12 +156,12 @@ int main(void)
 
         if (data_error)
         {
-            TimerDisable(TIMER0_BASE, TIMER_A);
+            //    TimerDisable(TIMER0_BASE, TIMER_A);
             //stop
             // print status...
 
             //enable....
-            TimerEnable(TIMER0_BASE, TIMER_A); // enable timer0 again
+            //    TimerEnable(TIMER0_BASE, TIMER_A); // enable timer0 again
             data_error = false;
         }
 
